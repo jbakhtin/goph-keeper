@@ -175,6 +175,92 @@ Cигнатура команды:
 
 ##### Получение данных
 
+1. Данные типа ключ/значение
+// TODO: скопировано из предыдущего пункта - переделать
+Cигнатура команды:
+  ```
+  % client kv put <key> <value> [arguments]
+  ```
+Пример использования:
+  ```
+  % client kv put john@gmail.com 1234 -description="My secret credentials to ThisWebSite.com" -expire="1d"
+  
+    ========= Key/Value =========
+    key                value
+    ---                -----
+    created_at         2023-10-20 17:19:00
+    expire_at          2023-10-21 17:19:00
+    description        "My secret credentials to ThisWebSite.com"
+  ```
+
+2. Данные типа банковские карты:
+   Cигнатура команды:
+  ```
+  % client bc put <number> [arguments]
+  
+  <number> - card number
+  
+  arguments:
+  
+  -code - CSV code on back side of card 
+  -vfd - validity from date
+  -ed - expire date
+  -chn - card holder name
+  -description - Description of the bank card 
+  -sc - sort code
+  -an - account number
+  -pnl - payment network logo
+  -bl - banking logo
+  -expire - date the card was removed from the database
+  
+  ```
+Пример использования:
+  ```
+  % client bc put "1111 1111 1111 1111" -code=123 -description="My most important card"
+  
+    ========= Bank Card =========
+    Number             number
+    ---                -----
+    created_at         2023-10-20 17:19:00
+    expire             nil
+    description        My most important card
+    code               123
+    vfd                <nil>
+    ed                 <nil>
+    chn                <nil>
+    sc                 <nil>
+    an                 <nil>
+    pnl                <nil>
+    bl                 <nil>
+  ```
+
+3. Данные типа файл:
+   Cигнатура команды:
+  ```
+  % client file put <file path> [arguments]
+  
+  <file path> - path to file on your local machine
+  
+  arguments:
+  
+  -description - Description of the bank card 
+  -expire - date the card was removed from the database
+  
+  ```
+Пример использования:
+  ```
+  % client file put /Users/root/.ssh/pets/id_rsa -description="My ssh "
+  
+    ========= File =========
+    File               fileName
+    ---                -----
+    created_at         2023-10-20 17:19:00
+    expire             nil
+    description        My most important card
+  ```
+
+
+
 ### Функции, реализация которых остаётся на усмотрение исполнителя:
 - создание, редактирование и удаление данных на стороне сервера или клиента;
 - формат регистрации нового пользователя;
