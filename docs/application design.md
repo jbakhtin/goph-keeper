@@ -1,0 +1,1 @@
+![Взаимодействие Клиент-Сервер](images/client-server-structure-2.png)
