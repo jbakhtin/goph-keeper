@@ -22,3 +22,7 @@ go.work
 
 # IDE files
 .idea
+
+# TSL/SSL files
+*.pem
+*.srl
