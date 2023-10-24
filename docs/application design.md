@@ -27,24 +27,24 @@
                 /handler.go
             /config
             /logger
-            /types
+            /type
             app.go
         /composites
             /grpc
         /domain
-            /models
-            /repositories
-            /services
+            /model
+            /repository
+            /service
         /infastructure
             /database
                 /postgres
-                    /migrations
-                    /queries
-                    /repositoryes
+                    /migration
+                    /query
+                    /repository
             /objectstorage
             /grpc
-                /interseptors
-                /handlers
+                /interseptor
+                /handler
                     /kv/v1
                     /creditcard/v1
                     /file/v1
