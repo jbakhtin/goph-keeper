@@ -20,6 +20,7 @@
     /file/v1
 /internal
     /client
+    /server
         /application
             /apperror
                 /errors.go
@@ -47,7 +48,6 @@
                     /kv/v1
                     /creditcard/v1
                     /file/v1
-    /server
 /pkg
     /proto
         /kv/v1
