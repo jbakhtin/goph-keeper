@@ -1,0 +1,1 @@
+If you are located in Russia, please make sure that you are turned on the VPN
