@@ -11,8 +11,8 @@ RUN go mod download
 COPY . .
 
 # Build
-RUN go build -a -o /app/cmd/server /app/cmd/server/main.go
-EXPOSE 8080
+RUN go build -a -o /app/bin/server /app/cmd/server/main.go
+EXPOSE 8000
 
 # Run
-CMD ["./app/bin/server"]
+CMD ["/app/bin/server"]
