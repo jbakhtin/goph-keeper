@@ -26,3 +26,6 @@ go.work
 # TSL/SSL files
 *.pem
 *.srl
+
+# sandbox
+cmd/sandbox

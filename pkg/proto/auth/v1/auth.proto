@@ -2,7 +2,60 @@ syntax = "proto3";
 
 package v1.auth;
 
-import "google/protobuf/empty.proto";
 import "buf/validate/validate.proto";
+import "google/protobuf/empty.proto";
 
-option go_package = "github.com/jbakhtin/goph-keep/pkg/proto/v1/auth";
+option go_package = "github.com/jbakhtin/goph-keeper/pkg/proto/auth/v1/auth";
+
+service AuthService {
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Register(RegisterRequest) returns (google.protobuf.Empty);
+  rpc RefreshAccessToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+}
+
+message RegisterRequest {
+  string email = 1;
+  string password = 2;
+  string password_confirmation = 3;
+}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+message RefreshTokenResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+}
+
+enum LogoutType {
+  TYPE_UNSPECIFIED = 0;
+  TYPE_ALL = 1;
+}
+
+message LogoutRequest {
+  LogoutType type = 1;
+}
+
+message Session {
+  uint64 session_id = 1;
+  uint64 user_id = 2;
+  string created_at = 3;
+  string closed_at = 4;
+}
+
+message LogoutResponse {
+  LogoutType type = 1;
+  repeated Session sessions = 2;
+}

@@ -1,10 +1,17 @@
 services:
 
-  db:
+  database:
     image: postgres
     restart: always
     ports:
-      - "5432:5432"
+      - 5432:5432
     environment:
-      - POSTGRES_PASSWORD=1234
-      - POSTGRES_USER=jurij
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_USER=bakhtin
+      - POSTGRES_DB=goph_keeper
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080

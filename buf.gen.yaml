@@ -6,13 +6,12 @@ managed:
     default: github.com/jbakhtin/goph-keep/
     except:
       - buf.build/bufbuild/protovalidate
-      -
 plugins:
   - plugin: go
-    out: gen
+    out: internal/server/infastructure/network/grpc/gen
     opt:
       - paths=source_relative
   - plugin: go-grpc
-    out: gen
+    out: internal/server/infastructure/network/grpc/gen
     opt:
       - paths=source_relative
