@@ -10,8 +10,8 @@ type TokensPair struct {
 }
 
 type UserData struct {
-	UserId    Id `json:"user_id,omitempty"`
-	SessionID Id `json:"session_id,omitempty"`
+	UserID    ID `json:"user_id,omitempty"`
+	SessionID ID `json:"session_id,omitempty"`
 }
 
 type JWTClaims struct {

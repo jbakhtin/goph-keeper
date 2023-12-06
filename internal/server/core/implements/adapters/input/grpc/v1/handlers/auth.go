@@ -114,8 +114,8 @@ func (h *AuthHandler) Logout(ctx context.Context, request *auth.LogoutRequest) (
 	var pbSessions []*auth.Session
 	for _, session := range sessions {
 		pbSessions = append(pbSessions, &auth.Session{
-			Id:        uint64(*session.ID),
-			UserId:    uint64(session.UserId),
+			ID:        uint64(*session.ID),
+			UserID:    uint64(session.UserID),
 			CreatedAt: time.Time(*session.CreatedAt).String(),
 			ClosedAt:  time.Time(*session.ClosedAt).String(),
 		})

@@ -26,8 +26,8 @@ var (
 )
 
 type Session struct {
-	ID           *types.Id
-	UserId       types.Id
+	ID           *types.ID
+	UserID       types.ID
 	RefreshToken types.RefreshToken
 	FingerPrint  types.FingerPrint
 	ExpireAt     types.TimeStamp

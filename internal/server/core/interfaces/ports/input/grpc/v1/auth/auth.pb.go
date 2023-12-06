@@ -349,8 +349,8 @@ type Session struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id           uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	UserId       uint64 `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	ID           uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	UserID       uint64 `protobuf:"varint,2,opt,name=user_id,json=userID,proto3" json:"user_id,omitempty"`
 	RefreshToken uint64 `protobuf:"varint,3,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
 	FingerPrint  uint64 `protobuf:"varint,4,opt,name=finger_print,json=fingerPrint,proto3" json:"finger_print,omitempty"`
 	CreatedAt    string `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
@@ -390,16 +390,16 @@ func (*Session) Descriptor() ([]byte, []int) {
 	return file_v1_auth_auth_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *Session) GetId() uint64 {
+func (x *Session) GetID() uint64 {
 	if x != nil {
-		return x.Id
+		return x.ID
 	}
 	return 0
 }
 
-func (x *Session) GetUserId() uint64 {
+func (x *Session) GetUserID() uint64 {
 	if x != nil {
-		return x.UserId
+		return x.UserID
 	}
 	return 0
 }
@@ -619,7 +619,7 @@ var file_v1_auth_auth_proto_goTypes = []interface{}{
 	(*LogoutResponse)(nil),       // 7: v1.auth.LogoutResponse
 	(*emptypb.Empty)(nil),        // 8: google.protobuf.Empty
 }
-var file_v1_auth_auth_proto_depIdxs = []int32{
+var file_v1_auth_auth_proto_depIDxs = []int32{
 	0, // 0: v1.auth.LogoutRequest.type:type_name -> v1.auth.LogoutType
 	0, // 1: v1.auth.LogoutResponse.type:type_name -> v1.auth.LogoutType
 	6, // 2: v1.auth.LogoutResponse.sessions:type_name -> v1.auth.Session
@@ -740,12 +740,12 @@ func file_v1_auth_auth_proto_init() {
 			NumServices:   1,
 		},
 		GoTypes:           file_v1_auth_auth_proto_goTypes,
-		DependencyIndexes: file_v1_auth_auth_proto_depIdxs,
+		DependencyIndexes: file_v1_auth_auth_proto_depIDxs,
 		EnumInfos:         file_v1_auth_auth_proto_enumTypes,
 		MessageInfos:      file_v1_auth_auth_proto_msgTypes,
 	}.Build()
 	File_v1_auth_auth_proto = out.File
 	file_v1_auth_auth_proto_rawDesc = nil
 	file_v1_auth_auth_proto_goTypes = nil
-	file_v1_auth_auth_proto_depIdxs = nil
+	file_v1_auth_auth_proto_depIDxs = nil
 }

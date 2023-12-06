@@ -24,11 +24,11 @@ func NewSessionRepository(client postgres.Postgres) (*SessionRepository, error) 
 	}, nil
 }
 
-func (s *SessionRepository) SaveSession(ctx context.Context, UserId types.Id, FingerPrint types.FingerPrint, ExpireAt types.TimeStamp) (*models.Session, error) {
+func (s *SessionRepository) SaveSession(ctx context.Context, UserID types.ID, FingerPrint types.FingerPrint, ExpireAt types.TimeStamp) (*models.Session, error) {
 	var created models.Session
-	err := s.QueryRowContext(ctx, query.CreateSession, UserId, FingerPrint, ExpireAt).
+	err := s.QueryRowContext(ctx, query.CreateSession, UserID, FingerPrint, ExpireAt).
 		Scan(&created.ID,
-			&created.UserId,
+			&created.UserID,
 			&created.RefreshToken,
 			&created.FingerPrint,
 			&created.ExpireAt,
@@ -42,11 +42,11 @@ func (s *SessionRepository) SaveSession(ctx context.Context, UserId types.Id, Fi
 	return &created, nil
 }
 
-func (s *SessionRepository) UpdateSessionByID(ctx context.Context, id types.Id, session models.Session) (*models.Session, error) {
+func (s *SessionRepository) UpdateSessionByID(ctx context.Context, id types.ID, session models.Session) (*models.Session, error) {
 	var updated models.Session
 	err := s.QueryRowContext(ctx, query.UpdateSessionByID, id, session.ExpireAt).
 		Scan(&updated.ID,
-			&updated.UserId,
+			&updated.UserID,
 			&updated.RefreshToken,
 			&updated.FingerPrint,
 			&updated.ExpireAt,
@@ -60,9 +60,9 @@ func (s *SessionRepository) UpdateSessionByID(ctx context.Context, id types.Id, 
 	return &updated, nil
 }
 
-func (s *SessionRepository) GetSessionsByUserID(ctx context.Context, userId types.Id) ([]*models.Session, error) {
-	fmt.Println(userId)
-	rows, err := s.QueryContext(ctx, query.GetSessionByUserID, userId)
+func (s *SessionRepository) GetSessionsByUserID(ctx context.Context, userID types.ID) ([]*models.Session, error) {
+	fmt.Println(userID)
+	rows, err := s.QueryContext(ctx, query.GetSessionByUserID, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (s *SessionRepository) GetSessionsByUserID(ctx context.Context, userId type
 	for rows.Next() {
 		var session models.Session
 		err = rows.Scan(&session.ID,
-			&session.UserId,
+			&session.UserID,
 			&session.RefreshToken,
 			&session.FingerPrint,
 			&session.ExpireAt,
@@ -88,11 +88,11 @@ func (s *SessionRepository) GetSessionsByUserID(ctx context.Context, userId type
 	return sessions, nil
 }
 
-func (s *SessionRepository) GetSessionByUserIDAndFingerPrint(ctx context.Context, userId types.Id, fingerPrint types.FingerPrint) (*models.Session, error) {
+func (s *SessionRepository) GetSessionByUserIDAndFingerPrint(ctx context.Context, userID types.ID, fingerPrint types.FingerPrint) (*models.Session, error) {
 	var got models.Session
-	err := s.QueryRowContext(ctx, query.GetSessionByUserIDAndFingerPrint, userId, fingerPrint).
+	err := s.QueryRowContext(ctx, query.GetSessionByUserIDAndFingerPrint, userID, fingerPrint).
 		Scan(&got.ID,
-			&got.UserId,
+			&got.UserID,
 			&got.RefreshToken,
 			got.FingerPrint,
 			&got.ExpireAt,
@@ -106,11 +106,11 @@ func (s *SessionRepository) GetSessionByUserIDAndFingerPrint(ctx context.Context
 	return &got, nil
 }
 
-func (s *SessionRepository) UpdateRefreshTokenById(ctx context.Context, id types.Id) (*models.Session, error) {
+func (s *SessionRepository) UpdateRefreshTokenByID(ctx context.Context, id types.ID) (*models.Session, error) {
 	var withNewRefresh models.Session
-	err := s.QueryRowContext(ctx, query.UpdateSessionRefreshTokenById, id).
+	err := s.QueryRowContext(ctx, query.UpdateSessionRefreshTokenByID, id).
 		Scan(&withNewRefresh.ID,
-			&withNewRefresh.UserId,
+			&withNewRefresh.UserID,
 			&withNewRefresh.RefreshToken,
 			&withNewRefresh.FingerPrint,
 			&withNewRefresh.ExpireAt,
@@ -128,7 +128,7 @@ func (s *SessionRepository) GetSessionByRefreshToken(ctx context.Context, refres
 	var get models.Session
 	err := s.QueryRowContext(ctx, query.GetSessionByRefreshToken, &refreshToken).
 		Scan(&get.ID,
-			&get.UserId,
+			&get.UserID,
 			&get.RefreshToken,
 			&get.FingerPrint,
 			&get.ExpireAt,
@@ -142,11 +142,11 @@ func (s *SessionRepository) GetSessionByRefreshToken(ctx context.Context, refres
 	return &get, nil
 }
 
-func (s *SessionRepository) GetSessionByID(ctx context.Context, id types.Id) (*models.Session, error) {
+func (s *SessionRepository) GetSessionByID(ctx context.Context, id types.ID) (*models.Session, error) {
 	var get models.Session
 	err := s.QueryRowContext(ctx, query.GetSessionByID, &id).
 		Scan(&get.ID,
-			&get.UserId,
+			&get.UserID,
 			&get.RefreshToken,
 			&get.FingerPrint,
 			&get.ExpireAt,
@@ -160,11 +160,11 @@ func (s *SessionRepository) GetSessionByID(ctx context.Context, id types.Id) (*m
 	return &get, nil
 }
 
-func (s *SessionRepository) CloseSessionByID(ctx context.Context, id types.Id) (*models.Session, error) {
+func (s *SessionRepository) CloseSessionByID(ctx context.Context, id types.ID) (*models.Session, error) {
 	var closed models.Session
 	err := s.QueryRowContext(ctx, query.CloseSessionByID, id).
 		Scan(&closed.ID,
-			&closed.UserId,
+			&closed.UserID,
 			&closed.RefreshToken,
 			&closed.FingerPrint,
 			&closed.ExpireAt,
@@ -178,8 +178,8 @@ func (s *SessionRepository) CloseSessionByID(ctx context.Context, id types.Id) (
 	return &closed, nil
 }
 
-func (s *SessionRepository) CloseSessionsByUserId(ctx context.Context, userId types.Id) ([]*models.Session, error) {
-	rows, err := s.QueryContext(ctx, query.CloseSessionsByUserID, userId)
+func (s *SessionRepository) CloseSessionsByUserID(ctx context.Context, userID types.ID) ([]*models.Session, error) {
+	rows, err := s.QueryContext(ctx, query.CloseSessionsByUserID, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -188,7 +188,7 @@ func (s *SessionRepository) CloseSessionsByUserId(ctx context.Context, userId ty
 	for rows.Next() {
 		var session models.Session
 		err = rows.Scan(&session.ID,
-			&session.UserId,
+			&session.UserID,
 			&session.RefreshToken,
 			&session.FingerPrint,
 			&session.ExpireAt,

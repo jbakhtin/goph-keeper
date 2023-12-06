@@ -23,15 +23,15 @@ func NewAccessTokenAppService(cfg config.Config) (*AccessTokenAppService, error)
 	}, nil
 }
 
-func (a *AccessTokenAppService) Create(userId types.Id, sessionId types.Id, duration time.Duration) (*types.AccessToken, error) {
+func (a *AccessTokenAppService) Create(userID types.ID, sessionID types.ID, duration time.Duration) (*types.AccessToken, error) {
 	expireAt := time.Now().Add(duration)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, types.JWTClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expireAt),
 		},
 		Data: types.UserData{
-			UserId:    userId,
-			SessionID: sessionId,
+			UserID:    userID,
+			SessionID: sessionID,
 		},
 	})
 

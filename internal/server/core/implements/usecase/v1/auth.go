@@ -108,7 +108,7 @@ func (us *AuthUseCase) RefreshToken(ctx context.Context, refreshToken types.Refr
 		return nil, errors.Wrap(err, "update refresh token")
 	}
 
-	accessToken, err := us.accessTokenAppService.Create(session.UserId, *session.ID, time.Minute*5) // ToDo: mode access_token duration to cfg
+	accessToken, err := us.accessTokenAppService.Create(session.UserID, *session.ID, time.Minute*5) // ToDo: mode access_token duration to cfg
 	if err != nil {
 		return nil, errors.Wrap(err, "create access_token")
 	}
@@ -120,14 +120,14 @@ func (us *AuthUseCase) RefreshToken(ctx context.Context, refreshToken types.Refr
 }
 
 func (us *AuthUseCase) Logout(ctx context.Context, logoutType types.LogoutType) (sessions []*models.Session, err error) {
-	var sessionId = ctx.Value(types.ContextKeySessionID)
-	var userId = ctx.Value(types.ContextKeyUserID)
+	var sessionID = ctx.Value(types.ContextKeySessionID)
+	var userID = ctx.Value(types.ContextKeyUserID)
 
 	fmt.Println("LogoutType_TYPE_ALL")
 
 	switch logoutType {
 	case types.LogoutType_THIS:
-		session, err := us.sessionDomainService.GetSessionByID(ctx, sessionId.(types.Id))
+		session, err := us.sessionDomainService.GetSessionByID(ctx, sessionID.(types.ID))
 		if err != nil {
 			return nil, errors.Wrap(err, "get session by session id")
 		}
@@ -138,7 +138,7 @@ func (us *AuthUseCase) Logout(ctx context.Context, logoutType types.LogoutType) 
 		}
 		sessions = append(sessions, session)
 	case types.LogoutType_ALL:
-		sessions, err = us.sessionsRepository.GetSessionsByUserID(ctx, userId.(types.Id))
+		sessions, err = us.sessionsRepository.GetSessionsByUserID(ctx, userID.(types.ID))
 
 		for index, session := range sessions {
 			session, err = us.sessionDomainService.CloseSession(ctx, *session)

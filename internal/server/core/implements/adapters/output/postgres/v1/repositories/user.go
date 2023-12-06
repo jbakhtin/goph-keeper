@@ -38,7 +38,7 @@ func (u *UserRepository) SaveUser(ctx context.Context, email, password string) (
 	return &stored, nil
 }
 
-func (u *UserRepository) GetUserByID(ctx context.Context, id types.Id) (*models.User, error) {
+func (u *UserRepository) GetUserByID(ctx context.Context, id types.ID) (*models.User, error) {
 	var user models.User
 	err := u.QueryRowContext(ctx, query.GetUserByID, id).
 		Scan(&user.ID,

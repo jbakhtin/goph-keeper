@@ -28,7 +28,7 @@ const (
 		RETURNING id, user_id, refresh_token, finger_print, expire_at, created_at, closed_at, updated_at
 	`
 
-	UpdateSessionRefreshTokenById = `
+	UpdateSessionRefreshTokenByID = `
 		UPDATE sessions
 		SET updated_at = NOW(), refresh_token = md5(random()::text)
 		WHERE sessions.id = $1

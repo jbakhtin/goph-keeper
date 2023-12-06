@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
+	"io"
 	"log"
 	"os"
 
@@ -24,6 +25,9 @@ func NewJWTCredentials() credentials.PerRPCCredentials {
 	}
 
 	data, err := reader.ReadBytes('\n')
+	if err != nil && err != io.EOF {
+		log.Fatal(errors.Wrap(err, "read bytes to /n"))
+	}
 
 	var tokens map[string]string
 	err = json.Unmarshal(data, &tokens)

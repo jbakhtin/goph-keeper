@@ -7,5 +7,5 @@ import (
 )
 
 type AccessTokenAppServiceInterface interface {
-	Create(userId types.Id, sessionId types.Id, duration time.Duration) (*types.AccessToken, error)
+	Create(userID types.ID, sessionID types.ID, duration time.Duration) (*types.AccessToken, error)
 }

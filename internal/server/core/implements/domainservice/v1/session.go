@@ -26,8 +26,8 @@ func NewSessionDomainService(cfg config.Config, repo repositories.SessionReposit
 	}, nil
 }
 
-func (s *sessionDomainService) CreateSession(ctx context.Context, UserId types.Id, FingerPrint types.FingerPrint, ExpireAt types.TimeStamp) (*models.Session, error) {
-	session, err := s.repo.SaveSession(ctx, UserId, FingerPrint, ExpireAt)
+func (s *sessionDomainService) CreateSession(ctx context.Context, UserID types.ID, FingerPrint types.FingerPrint, ExpireAt types.TimeStamp) (*models.Session, error) {
+	session, err := s.repo.SaveSession(ctx, UserID, FingerPrint, ExpireAt)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func (s *sessionDomainService) CreateSession(ctx context.Context, UserId types.I
 	return session, nil
 }
 
-func (s *sessionDomainService) GetSessionByID(ctx context.Context, id types.Id) (*models.Session, error) {
+func (s *sessionDomainService) GetSessionByID(ctx context.Context, id types.ID) (*models.Session, error) {
 	session, err := s.repo.GetSessionByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -53,8 +53,8 @@ func (s *sessionDomainService) GetSessionByRefreshToken(ctx context.Context, ref
 	return session, nil
 }
 
-func (s *sessionDomainService) GetSessionByFingerPrintAndUserId(ctx context.Context, fingerPrint types.FingerPrint, userId types.Id) (*models.Session, error) {
-	session, err := s.repo.GetSessionByUserIDAndFingerPrint(ctx, userId, fingerPrint)
+func (s *sessionDomainService) GetSessionByFingerPrintAndUserID(ctx context.Context, fingerPrint types.FingerPrint, userID types.ID) (*models.Session, error) {
+	session, err := s.repo.GetSessionByUserIDAndFingerPrint(ctx, userID, fingerPrint)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (s *sessionDomainService) UpdateRefreshToken(ctx context.Context, session m
 		return nil, errors.New("session is expired")
 	}
 
-	closed, err := s.repo.UpdateRefreshTokenById(ctx, *session.ID)
+	closed, err := s.repo.UpdateRefreshTokenByID(ctx, *session.ID)
 	if err != nil {
 		return nil, err
 	}

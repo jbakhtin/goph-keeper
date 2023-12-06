@@ -5,7 +5,7 @@ import (
 )
 
 type User struct {
-	ID        *types.Id
+	ID        *types.ID
 	Email     string
 	Password  string
 	CreatedAt *types.TimeStamp

@@ -46,7 +46,7 @@ var file_v1_creditcard_creditcard_proto_rawDesc = []byte{
 }
 
 var file_v1_creditcard_creditcard_proto_goTypes = []interface{}{}
-var file_v1_creditcard_creditcard_proto_depIdxs = []int32{
+var file_v1_creditcard_creditcard_proto_depIDxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -70,10 +70,10 @@ func file_v1_creditcard_creditcard_proto_init() {
 			NumServices:   0,
 		},
 		GoTypes:           file_v1_creditcard_creditcard_proto_goTypes,
-		DependencyIndexes: file_v1_creditcard_creditcard_proto_depIdxs,
+		DependencyIndexes: file_v1_creditcard_creditcard_proto_depIDxs,
 	}.Build()
 	File_v1_creditcard_creditcard_proto = out.File
 	file_v1_creditcard_creditcard_proto_rawDesc = nil
 	file_v1_creditcard_creditcard_proto_goTypes = nil
-	file_v1_creditcard_creditcard_proto_depIdxs = nil
+	file_v1_creditcard_creditcard_proto_depIDxs = nil
 }

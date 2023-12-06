@@ -80,7 +80,7 @@ func (i *AuthInterceptor) authorize(ctx context.Context, method string) (context
 
 	fmt.Println(customClaims)
 
-	ctx = context.WithValue(ctx, types.ContextKeyUserID, customClaims.Data.UserId)
+	ctx = context.WithValue(ctx, types.ContextKeyUserID, customClaims.Data.UserID)
 	ctx = context.WithValue(ctx, types.ContextKeySessionID, customClaims.Data.SessionID)
 
 	return ctx, nil

@@ -35,8 +35,8 @@ func (u *userDomainService) CreateUser(ctx context.Context, email, password stri
 	return user, nil
 }
 
-func (u *userDomainService) GetUserByID(ctx context.Context, userId types.Id) (*models.User, error) {
-	user, err := u.repo.GetUserByID(ctx, userId)
+func (u *userDomainService) GetUserByID(ctx context.Context, userID types.ID) (*models.User, error) {
+	user, err := u.repo.GetUserByID(ctx, userID)
 	if err != nil {
 		return nil, err
 	}

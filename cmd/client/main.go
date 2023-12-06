@@ -191,7 +191,7 @@ func Registration(cmd *flag.FlagSet, email, password, passwordConfirmation *stri
 func openFile(path string, flag int, perm os.FileMode) (*os.File, error) {
 	file, err := os.OpenFile(path, flag, perm)
 	if os.IsNotExist(err) {
-		file, err = os.Create(path)
+		_, err = os.Create(path)
 		if err != nil {
 			return nil, err
 		}

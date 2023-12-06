@@ -11,34 +11,34 @@ import (
 	"github.com/go-faster/errors"
 )
 
-type Id uint64
+type ID uint64
 type TimeStamp time.Time
 type FingerPrint map[string]string
 type RefreshToken string
 
-func (id *Id) Scan(value any) error {
+func (id *ID) Scan(value any) error {
 	switch vt := value.(type) {
 	case int64:
-		*id = Id(vt)
+		*id = ID(vt)
 	default:
-		return errors.New(fmt.Sprintf("can not convert %x to %x type", vt, "Id"))
+		return errors.New(fmt.Sprintf("can not convert %x to %x type", vt, "ID"))
 	}
 
 	return nil
 }
 
-func (id *Id) UnmarshalJSON(data []byte) (err error) {
+func (id *ID) UnmarshalJSON(data []byte) (err error) {
 	value, err := strconv.Atoi(string(data))
 	if err != nil {
 		fmt.Println("Can not convert this []byte to int")
 	}
 
-	*id = Id(value)
+	*id = ID(value)
 
 	return
 }
 
-//func (id Id) MarshalJSON() (b []byte, err error) {
+//func (id ID) MarshalJSON() (b []byte, err error) {
 //	return json.Marshal(id)
 //}
 
