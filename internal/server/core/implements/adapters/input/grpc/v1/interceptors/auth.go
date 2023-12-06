@@ -47,14 +47,14 @@ func (i *AuthInterceptor) authorize(ctx context.Context, method string) (context
 
 	rawAccessToken := metadata.ValueFromIncomingContext(ctx, "authorization")
 	if len(rawAccessToken) == 0 {
-		return nil, apperror.NotAuthorized
+		return nil, apperror.ErrNotAuthorized
 	}
 
 	fmt.Println(rawAccessToken)
 
 	bearerToken := strings.Split(rawAccessToken[0], " ")
 	if bearerToken[0] != "Bearer" {
-		return nil, apperror.NotAuthorized
+		return nil, apperror.ErrNotAuthorized
 	}
 
 	fmt.Println(bearerToken[1])
@@ -67,12 +67,12 @@ func (i *AuthInterceptor) authorize(ctx context.Context, method string) (context
 	fmt.Println(token.Valid)
 
 	if err != nil || !token.Valid {
-		return nil, apperror.NotAuthorized
+		return nil, apperror.ErrNotAuthorized
 	}
 
 	customClaims, ok := token.Claims.(*types.JWTClaims)
 	if !ok {
-		return nil, apperror.NotAuthorized
+		return nil, apperror.ErrNotAuthorized
 	}
 
 	fmt.Println(customClaims)

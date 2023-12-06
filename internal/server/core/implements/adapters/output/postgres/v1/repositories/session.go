@@ -3,7 +3,6 @@ package repositories
 import (
 	"context"
 	"fmt"
-
 	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/adapters/output/postgres/v1"
 	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/adapters/output/postgres/v1/query"
 	"github.com/jbakhtin/goph-keeper/internal/server/core/interfaces/ports/output/repositories/v1"
@@ -67,6 +66,8 @@ func (s *SessionRepository) GetSessionsByUserID(ctx context.Context, userID type
 		return nil, err
 	}
 
+	defer rows.Close()
+
 	sessions := make([]*models.Session, 0)
 	for rows.Next() {
 		var session models.Session
@@ -83,6 +84,10 @@ func (s *SessionRepository) GetSessionsByUserID(ctx context.Context, userID type
 		}
 
 		sessions = append(sessions, &session)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
 	}
 
 	return sessions, nil
@@ -183,6 +188,7 @@ func (s *SessionRepository) CloseSessionsByUserID(ctx context.Context, userID ty
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	var sessions []*models.Session
 	for rows.Next() {
@@ -200,6 +206,10 @@ func (s *SessionRepository) CloseSessionsByUserID(ctx context.Context, userID ty
 		}
 
 		sessions = append(sessions, &session)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
 	}
 
 	return sessions, nil

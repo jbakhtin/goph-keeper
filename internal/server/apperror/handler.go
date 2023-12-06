@@ -20,7 +20,7 @@ func Handler(h errorHandler) http.HandlerFunc {
 		//		switch appErr {
 		//		case NotFound:
 		//			w.WriteHeader(http.StatusNotFound)
-		//		case UserAlreadyExists:
+		//		case ErrUserAlreadyExists:
 		//			w.WriteHeader(http.StatusConflict)
 		//		default:
 		//			w.WriteHeader(http.StatusBadRequest)

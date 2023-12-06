@@ -99,9 +99,9 @@ func (h *AuthHandler) Logout(ctx context.Context, request *auth.LogoutRequest) (
 	switch request.Type {
 	case auth.LogoutType_TYPE_ALL:
 		fmt.Println("LogoutType_TYPE_ALL")
-		logoutType = types.LogoutType_ALL
+		logoutType = types.LogoutTypeAll
 	case auth.LogoutType_TYPE_UNSPECIFIED:
-		logoutType = types.LogoutType_THIS
+		logoutType = types.LogoutTypeThis
 	default:
 		return nil, errors.New("logout type is not allowed")
 	}

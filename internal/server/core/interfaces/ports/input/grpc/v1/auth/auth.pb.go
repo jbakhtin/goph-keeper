@@ -32,11 +32,11 @@ const (
 
 // Enum value maps for LogoutType.
 var (
-	LogoutType_name = map[int32]string{
+	LogoutTypeName = map[int32]string{
 		0: "TYPE_UNSPECIFIED",
 		1: "TYPE_ALL",
 	}
-	LogoutType_value = map[string]int32{
+	LogoutTypeValue = map[string]int32{
 		"TYPE_UNSPECIFIED": 0,
 		"TYPE_ALL":         1,
 	}

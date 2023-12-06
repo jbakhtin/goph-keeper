@@ -5,8 +5,8 @@ import (
 )
 
 var (
-	UserNotFound      = errors.New("user not found")
-	NotAuthorized     = errors.New("user not authorized")
-	InvalidPassword   = errors.New("invalid password")
-	UserAlreadyExists = errors.New("user already exists")
+	ErrUserNotFound      = errors.New("user not found")
+	ErrNotAuthorized     = errors.New("user not authorized")
+	ErrInvalidPassword   = errors.New("invalid password")
+	ErrUserAlreadyExists = errors.New("user already exists")
 )

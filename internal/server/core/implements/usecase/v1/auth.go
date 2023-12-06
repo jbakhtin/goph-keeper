@@ -53,7 +53,7 @@ func (us *AuthUseCase) RegisterUser(ctx context.Context, email, rawPassword stri
 	}
 
 	if user != nil {
-		return nil, apperror.UserAlreadyExists
+		return nil, apperror.ErrUserAlreadyExists
 	}
 
 	hashedPassword, err := us.passwordAppService.HashPassword(rawPassword)
@@ -126,7 +126,7 @@ func (us *AuthUseCase) Logout(ctx context.Context, logoutType types.LogoutType) 
 	fmt.Println("LogoutType_TYPE_ALL")
 
 	switch logoutType {
-	case types.LogoutType_THIS:
+	case types.LogoutTypeThis:
 		session, err := us.sessionDomainService.GetSessionByID(ctx, sessionID.(types.ID))
 		if err != nil {
 			return nil, errors.Wrap(err, "get session by session id")
@@ -137,7 +137,7 @@ func (us *AuthUseCase) Logout(ctx context.Context, logoutType types.LogoutType) 
 			return nil, errors.Wrap(err, "close current session by session_id")
 		}
 		sessions = append(sessions, session)
-	case types.LogoutType_ALL:
+	case types.LogoutTypeAll:
 		sessions, err = us.sessionsRepository.GetSessionsByUserID(ctx, userID.(types.ID))
 		if err != nil {
 			return nil, errors.Wrap(err, "get sessions by user_id")
