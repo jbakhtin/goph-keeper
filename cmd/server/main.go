@@ -2,30 +2,32 @@ package main
 
 import (
 	"context"
-	"github.com/go-faster/errors"
-	"github.com/jbakhtin/goph-keeper/internal/server/application/config"
-	authService "github.com/jbakhtin/goph-keeper/internal/server/domain/services/auth"
-	sessionService "github.com/jbakhtin/goph-keeper/internal/server/domain/services/session"
-	"github.com/jbakhtin/goph-keeper/internal/server/infastructure/database/postgres"
-	sessionRepo "github.com/jbakhtin/goph-keeper/internal/server/infastructure/database/postgres/repositories/session"
-	userRepo "github.com/jbakhtin/goph-keeper/internal/server/infastructure/database/postgres/repositories/user"
-	grpcServer "github.com/jbakhtin/goph-keeper/internal/server/infastructure/network/grpc"
-	authServer "github.com/jbakhtin/goph-keeper/internal/server/infastructure/network/grpc/handlers/v1/auth"
-	"github.com/jbakhtin/goph-keeper/internal/server/infastructure/network/grpc/interceptors/auth"
-	"github.com/jbakhtin/rtagent/pkg/closer"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 	"log"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/jbakhtin/goph-keeper/internal/server/config"
+	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/adapters/input/grpc/v1"
+	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/adapters/input/grpc/v1/handlers"
+	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/adapters/input/grpc/v1/interceptors"
+	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/adapters/output/postgres/v1"
+	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/adapters/output/postgres/v1/repositories"
+	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/appservices/v1"
+	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/domainservice/v1"
+	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/usecase/v1"
+
+	"github.com/go-faster/errors"
+
+	"github.com/jbakhtin/rtagent/pkg/closer"
+	"google.golang.org/grpc/reflection"
 )
 
 var (
-	cfg  *config.Config
+	cfg      *config.Config
 	pgClient *postgres.Postgres
-	server *grpcServer.Server
-	clr  *closer.Closer
+	server   *grpc.Server
+	clr      *closer.Closer
 )
 
 func accessibleRoles() map[string][]string {
@@ -35,7 +37,7 @@ func accessibleRoles() map[string][]string {
 		//authService + "Login": {},
 		//authService + "Register": {},
 		authService + "RefreshToken": {},
-		authService + "Logout": {},
+		authService + "Logout":       {},
 	}
 }
 
@@ -47,48 +49,60 @@ func init() {
 		log.Fatal(err)
 	}
 
-	pgClient, err = postgres.New(cfg)
+	pgClient, err = postgres.New(cfg) // ToDo: need to move inside the constructor
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	userRepo, err := userRepo.New(*pgClient)
+	userRepo, err := repositories.NewUserRepository(*pgClient)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	sessionRepo, err := sessionRepo.New(*pgClient)
+	sessionRepo, err := repositories.NewSessionRepository(*pgClient)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	authService, err := authService.New(cfg, userRepo)
+	userDomainService, err := domainservice.NewUserDomainService(*cfg, userRepo)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	sessionService, err := sessionService.New(cfg, sessionRepo)
+	sessionDomainService, err := domainservice.NewSessionDomainService(*cfg, sessionRepo)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	authServer, err := authServer.New(*authService, *sessionService).Build()
+	accessTokenAppService, err := appservices.NewAccessTokenAppService(*cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	authInterceptor := auth.Interceptor{
-		Cfg: cfg,
-		AccessibleRoles: accessibleRoles(),
+	passwordAppService, err := appservices.NewPasswordAppService(*cfg)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	serverOptions := []grpc.ServerOption{
-		grpc.ChainUnaryInterceptor(authInterceptor.Unary),
+	authUseCases, err := usecase.NewAuthUseCase(*cfg,
+		userDomainService,
+		sessionDomainService,
+		passwordAppService,
+		accessTokenAppService,
+		sessionRepo,
+	)
+
+	authHandler, err := handlers.NewAuthHandler(authUseCases)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	server, err = grpcServer.New(cfg, serverOptions...).
-		WithAuthHandler(authServer).
-		Build()
+	authInterceptor, err := interceptors.NewAuthInterceptor(*cfg, accessibleRoles())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	server, err = grpc.NewServer(*cfg, authHandler, grpc.WithUnaryInterceptor(authInterceptor.Unary))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -110,7 +124,7 @@ func main() {
 
 	// Gracefully shut down
 	<-osCtx.Done()
-	withTimeout, cancelShutdownProc := context.WithTimeout(context.Background(), time.Second * 10)
+	withTimeout, cancelShutdownProc := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancelShutdownProc()
 
 	if err := clr.Close(withTimeout); err != nil {

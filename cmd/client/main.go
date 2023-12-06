@@ -6,13 +6,16 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/go-faster/errors"
-	"github.com/jbakhtin/goph-keeper/internal/client/infastructure/network/interceptors/unary/auth"
-	pb "github.com/jbakhtin/goph-keeper/internal/server/infastructure/network/grpc/gen/auth/v1"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"os"
+
+	"github.com/jbakhtin/goph-keeper/internal/server/core/interfaces/ports/input/grpc/v1/auth"
+
+	"github.com/go-faster/errors"
+	"github.com/jbakhtin/goph-keeper/internal/client/infrastructure/persistance/grpc/credentials"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type TokensPair struct {
@@ -32,13 +35,12 @@ func main() {
 	registerPassword := registrationCMD.String("password", "", "Password.")
 	registerPasswordConfirmation := registrationCMD.String("password_confirmation", "", "Password confirmation.")
 
-	logoutCMD := flag.NewFlagSet("registration", flag.ExitOnError)
-	logoutType := logoutCMD.String("type", "current", "Logout type")
+	logoutCMD := flag.NewFlagSet("logout", flag.ExitOnError)
+	logoutType := logoutCMD.Int("type", 0, "Logout type")
 
 	refreshTokenCMD := flag.NewFlagSet("refreshtoken", flag.ExitOnError)
 
 	if len(os.Args) < 2 {
-		fmt.Println("expected 'login' or 'registration' command")
 		os.Exit(1)
 	}
 
@@ -59,53 +61,53 @@ func main() {
 	}
 }
 
-func Logout(cmd *flag.FlagSet, logoutType *string) error {
+func Logout(cmd *flag.FlagSet, logoutType *int) error {
 	if err := cmd.Parse(os.Args[2:]); err != nil {
 		log.Fatal(err)
 	}
 
-	authorization := auth.Authorization{}
-
 	conn, err := grpc.Dial(":3200",
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithUnaryInterceptor(authorization.AccessTokenClientInterceptor))
+		grpc.WithPerRPCCredentials(credentials.NewJWTCredentials()),
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	client := pb.NewAuthServiceClient(conn)
+	client := auth.NewAuthServiceClient(conn)
 
-	pbLogoutRequest := &pb.LogoutRequest{
-		Type: pb.LogoutType_TYPE_UNSPECIFIED,
+	pbLogoutRequest := &auth.LogoutRequest{
+		Type: auth.LogoutType(*logoutType),
 	}
 
-	_, err = client.Logout(context.TODO(), pbLogoutRequest)
+	response, err := client.Logout(context.TODO(), pbLogoutRequest)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	fmt.Println(response.Type)
+	fmt.Println(response.Sessions)
 
 	return nil
 }
-
 
 func Login(cmd *flag.FlagSet, login, password *string) error {
 	if err := cmd.Parse(os.Args[2:]); err != nil {
 		log.Fatal(err)
 	}
 
-	conn, err := grpc.Dial(":3200", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial(":3200",
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	client := pb.NewAuthServiceClient(conn)
+	client := auth.NewAuthServiceClient(conn)
 
-	pbLoginRequest := &pb.LoginRequest{
-		Email: *login,
+	pbLoginRequest := &auth.LoginRequest{
+		Email:    *login,
 		Password: *password,
 	}
-
-	fmt.Println("client", pbLoginRequest)
 
 	response, err := client.Login(context.TODO(), pbLoginRequest)
 	if err != nil {
@@ -139,32 +141,31 @@ func Login(cmd *flag.FlagSet, login, password *string) error {
 }
 
 func RefreshToken(cmd *flag.FlagSet) error {
-	tokens, err := Read()
-	if err != nil {
-		return err
-	}
-
-	conn, err := grpc.Dial(":3200", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial(":3200",
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithPerRPCCredentials(credentials.NewRefreshTokenCredentials()),
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	client := pb.NewAuthServiceClient(conn)
-	response, err := client.RefreshAccessToken(context.TODO(), &pb.RefreshTokenRequest{
-		RefreshToken: tokens.RefreshToken,
-	})
+	client := auth.NewAuthServiceClient(conn)
+	response, err := client.RefreshAccessToken(context.TODO(), &emptypb.Empty{})
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	fmt.Println(response)
 
 	err = Write(response)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	return nil
 }
 
-func Registration(cmd * flag.FlagSet, email, password, passwordConfirmation *string) {
-	fmt.Println("Registration ...")
-
+func Registration(cmd *flag.FlagSet, email, password, passwordConfirmation *string) {
 	if err := cmd.Parse(os.Args[2:]); err != nil {
 		log.Fatal(err)
 	}
@@ -174,15 +175,13 @@ func Registration(cmd * flag.FlagSet, email, password, passwordConfirmation *str
 		log.Fatal(err)
 	}
 
-	client := pb.NewAuthServiceClient(conn)
+	client := auth.NewAuthServiceClient(conn)
 
-	pbRegisterRequest := &pb.RegisterRequest{
-		Email: *email,
-		Password: *password,
+	pbRegisterRequest := &auth.RegisterRequest{
+		Email:                *email,
+		Password:             *password,
 		PasswordConfirmation: *passwordConfirmation,
 	}
-
-	fmt.Println("client", pbRegisterRequest)
 
 	response, err := client.Register(context.TODO(), pbRegisterRequest)
 
@@ -204,21 +203,6 @@ func openFile(path string, flag int, perm os.FileMode) (*os.File, error) {
 	}
 
 	return file, nil
-}
-
-func Read() (*TokensPair, error) {
-	content, err := os.ReadFile("./config.json")
-	if err != nil {
-		return nil, errors.Wrap(err, "open file")
-	}
-
-	var tokens TokensPair
-	err = json.Unmarshal(content, &tokens)
-	if err != nil {
-		return nil, errors.Wrap(err, "unmarshal file to structure")
-	}
-
-	return &tokens, nil
 }
 
 func Write(data any) (err error) {

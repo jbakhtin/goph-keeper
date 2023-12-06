@@ -2,6 +2,7 @@ package config
 
 type Config struct {
 	AppKey string `env:"APP_KEY"`
+	DB
 }
 
 func (c *Config) SetAppKey(value string) {
