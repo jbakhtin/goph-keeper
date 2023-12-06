@@ -35,33 +35,6 @@ func (s *sessionDomainService) CreateSession(ctx context.Context, UserID types.I
 	return session, nil
 }
 
-func (s *sessionDomainService) GetSessionByID(ctx context.Context, id types.ID) (*models.Session, error) {
-	session, err := s.repo.GetSessionByID(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	return session, nil
-}
-
-func (s *sessionDomainService) GetSessionByRefreshToken(ctx context.Context, refreshToken types.RefreshToken) (*models.Session, error) {
-	session, err := s.repo.GetSessionByRefreshToken(ctx, refreshToken)
-	if err != nil {
-		return nil, err
-	}
-
-	return session, nil
-}
-
-func (s *sessionDomainService) GetSessionByFingerPrintAndUserID(ctx context.Context, fingerPrint types.FingerPrint, userID types.ID) (*models.Session, error) {
-	session, err := s.repo.GetSessionByUserIDAndFingerPrint(ctx, userID, fingerPrint)
-	if err != nil {
-		return nil, err
-	}
-
-	return session, nil
-}
-
 func (s *sessionDomainService) CloseSession(ctx context.Context, session models.Session) (*models.Session, error) {
 	closed, err := s.repo.CloseSessionByID(ctx, *session.ID)
 	if err != nil {

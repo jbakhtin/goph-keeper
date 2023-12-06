@@ -8,7 +8,6 @@ import (
 
 	"github.com/jbakhtin/goph-keeper/internal/server/config"
 	"github.com/jbakhtin/goph-keeper/internal/server/core/domain/models"
-	"github.com/jbakhtin/goph-keeper/internal/server/core/domain/types"
 )
 
 var _ domainservices.UserDomainServiceInterface = &userDomainService{}
@@ -28,24 +27,6 @@ func NewUserDomainService(cfg config.Config, repo repositories.UserRepositoryInt
 
 func (u *userDomainService) CreateUser(ctx context.Context, email, password string) (*models.User, error) {
 	user, err := u.repo.SaveUser(ctx, email, password)
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
-}
-
-func (u *userDomainService) GetUserByID(ctx context.Context, userID types.ID) (*models.User, error) {
-	user, err := u.repo.GetUserByID(ctx, userID)
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
-}
-
-func (u *userDomainService) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
-	user, err := u.repo.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, err
 	}
