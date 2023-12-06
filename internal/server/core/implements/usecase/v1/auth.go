@@ -75,7 +75,7 @@ func (us *AuthUseCase) LoginUser(ctx context.Context, email string, password str
 		return nil, errors.Wrap(err, "get user by email")
 	}
 
-	if ok, err := us.passwordAppService.CheckPassword(password, user.Password); ok == false {
+	if ok, err := us.passwordAppService.CheckPassword(password, user.Password); !ok {
 		return nil, errors.New("check password")
 	} else if err != nil {
 		return nil, errors.Wrap(err, "check password")
@@ -139,13 +139,17 @@ func (us *AuthUseCase) Logout(ctx context.Context, logoutType types.LogoutType) 
 		sessions = append(sessions, session)
 	case types.LogoutType_ALL:
 		sessions, err = us.sessionsRepository.GetSessionsByUserID(ctx, userID.(types.ID))
+		if err != nil {
+			return nil, errors.Wrap(err, "get sessions by user_id")
+		}
 
 		for index, session := range sessions {
 			session, err = us.sessionDomainService.CloseSession(ctx, *session)
-			sessions[index] = session
 			if err != nil {
 				return nil, errors.Wrap(err, "close all sessions by user_id")
 			}
+
+			sessions[index] = session
 		}
 	}
 

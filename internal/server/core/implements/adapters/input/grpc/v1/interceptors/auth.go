@@ -60,9 +60,6 @@ func (i *AuthInterceptor) authorize(ctx context.Context, method string) (context
 	fmt.Println(bearerToken[1])
 
 	token, err := jwt.ParseWithClaims(bearerToken[1], &types.JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(jwt.SigningMethod); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
 		return []byte(i.cfg.GetAppKey()), nil
 	})
 

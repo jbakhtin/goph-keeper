@@ -53,9 +53,15 @@ func main() {
 	case "registration":
 		Registration(registrationCMD, registerEmail, registerPassword, registerPasswordConfirmation)
 	case "refreshtoken":
-		RefreshToken(refreshTokenCMD)
+		err := RefreshToken(refreshTokenCMD)
+		if err != nil {
+			log.Fatal(err)
+		}
 	case "logout":
-		Logout(logoutCMD, logoutType)
+		err := Logout(logoutCMD, logoutType)
+		if err != nil {
+			log.Fatal(err)
+		}
 	default:
 		fmt.Println("Need to pass command")
 	}
@@ -184,12 +190,18 @@ func Registration(cmd *flag.FlagSet, email, password, passwordConfirmation *stri
 	}
 
 	response, err := client.Register(context.TODO(), pbRegisterRequest)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	fmt.Println(response, err)
 }
 
 func openFile(path string, flag int, perm os.FileMode) (*os.File, error) {
 	file, err := os.OpenFile(path, flag, perm)
+	if err != nil {
+		return nil, err
+	}
 	if os.IsNotExist(err) {
 		_, err = os.Create(path)
 		if err != nil {

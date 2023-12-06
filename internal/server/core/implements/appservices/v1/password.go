@@ -38,7 +38,7 @@ func (p *PasswordAppService) CheckPassword(password, need string) (bool, error) 
 
 func (p *PasswordAppService) hashPassword(password string) (string, error) {
 	h := hmac.New(sha256.New, []byte(p.cfg.GetAppKey()))
-	h.Write([]byte(fmt.Sprintf("%s", password)))
+	h.Write([]byte(password))
 	dst := h.Sum(nil)
 
 	return fmt.Sprintf("%x", dst), nil

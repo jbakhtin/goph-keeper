@@ -42,7 +42,7 @@ func TestPasswordAppService_CheckPassword(t *testing.T) {
 	}
 
 	h := hmac.New(sha256.New, []byte(cfg.GetAppKey()))
-	h.Write([]byte(fmt.Sprintf("%s", "password")))
+	h.Write([]byte("password"))
 	dst := h.Sum(nil)
 	hashedPassword := fmt.Sprintf("%x", dst)
 

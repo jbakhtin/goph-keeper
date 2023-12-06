@@ -91,6 +91,9 @@ func init() {
 		accessTokenAppService,
 		sessionRepo,
 	)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	authHandler, err := handlers.NewAuthHandler(authUseCases)
 	if err != nil {
