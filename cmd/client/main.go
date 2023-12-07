@@ -9,7 +9,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/jbakhtin/goph-keeper/internal/server/core/interfaces/ports/input/grpc/v1/auth"
+	auth2 "github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/input/grpc/v1/auth"
 
 	"github.com/go-faster/errors"
 	"github.com/jbakhtin/goph-keeper/internal/client/infrastructure/persistance/grpc/credentials"
@@ -80,10 +80,10 @@ func Logout(cmd *flag.FlagSet, logoutType *int) error {
 		log.Fatal(err)
 	}
 
-	client := auth.NewAuthServiceClient(conn)
+	client := auth2.NewAuthServiceClient(conn)
 
-	pbLogoutRequest := &auth.LogoutRequest{
-		Type: auth.LogoutType(*logoutType),
+	pbLogoutRequest := &auth2.LogoutRequest{
+		Type: auth2.LogoutType(*logoutType),
 	}
 
 	response, err := client.Logout(context.TODO(), pbLogoutRequest)
@@ -108,9 +108,9 @@ func Login(cmd *flag.FlagSet, login, password *string) error {
 		log.Fatal(err)
 	}
 
-	client := auth.NewAuthServiceClient(conn)
+	client := auth2.NewAuthServiceClient(conn)
 
-	pbLoginRequest := &auth.LoginRequest{
+	pbLoginRequest := &auth2.LoginRequest{
 		Email:    *login,
 		Password: *password,
 	}
@@ -155,7 +155,7 @@ func RefreshToken(cmd *flag.FlagSet) error {
 		log.Fatal(err)
 	}
 
-	client := auth.NewAuthServiceClient(conn)
+	client := auth2.NewAuthServiceClient(conn)
 	response, err := client.RefreshAccessToken(context.TODO(), &emptypb.Empty{})
 	if err != nil {
 		log.Fatal(err)
@@ -181,9 +181,9 @@ func Registration(cmd *flag.FlagSet, email, password, passwordConfirmation *stri
 		log.Fatal(err)
 	}
 
-	client := auth.NewAuthServiceClient(conn)
+	client := auth2.NewAuthServiceClient(conn)
 
-	pbRegisterRequest := &auth.RegisterRequest{
+	pbRegisterRequest := &auth2.RegisterRequest{
 		Email:                *email,
 		Password:             *password,
 		PasswordConfirmation: *passwordConfirmation,

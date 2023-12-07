@@ -2,29 +2,27 @@ package main
 
 import (
 	"context"
+	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/output/repositories/postgres/v1"
+	repositories2 "github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/output/repositories/postgres/v1/repositories"
 	"log"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/jbakhtin/goph-keeper/internal/server/config"
-	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/adapters/input/grpc/v1"
-	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/adapters/input/grpc/v1/handlers"
-	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/adapters/input/grpc/v1/interceptors"
-	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/adapters/output/postgres/v1"
-	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/adapters/output/postgres/v1/repositories"
-	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/appservices/v1"
-	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/domainservice/v1"
-	"github.com/jbakhtin/goph-keeper/internal/server/core/implements/usecase/v1"
+	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/input/config/v1/drivers"
+	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/input/grpc/v1"
+	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/input/grpc/v1/handlers"
+	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/input/grpc/v1/interceptors"
+	"github.com/jbakhtin/goph-keeper/internal/server/implements/appservices/v1"
+	"github.com/jbakhtin/goph-keeper/internal/server/implements/domainservice/v1"
+	"github.com/jbakhtin/goph-keeper/internal/server/implements/usecase/v1"
 
 	"github.com/go-faster/errors"
-
 	"github.com/jbakhtin/rtagent/pkg/closer"
 	"google.golang.org/grpc/reflection"
 )
 
 var (
-	cfg      *config.Config
 	pgClient *postgres.Postgres
 	server   *grpc.Server
 	clr      *closer.Closer
@@ -44,7 +42,7 @@ func accessibleRoles() map[string][]string {
 func init() {
 	var err error
 
-	cfg, err = config.New().ParseEnv().Build()
+	cfg, err := drivers.NewFormENV()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,42 +52,44 @@ func init() {
 		log.Fatal(err)
 	}
 
-	userRepo, err := repositories.NewUserRepository(*pgClient)
+	userRepo, err := repositories2.NewUserRepository(*pgClient)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	sessionRepo, err := repositories.NewSessionRepository(*pgClient)
+	sessionRepo, err := repositories2.NewSessionRepository(*pgClient)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	userDomainService, err := domainservice.NewUserDomainService(*cfg, userRepo)
+	userDomainService, err := domainservice.NewUserDomainService(cfg, userRepo)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	sessionDomainService, err := domainservice.NewSessionDomainService(*cfg, sessionRepo)
+	sessionDomainService, err := domainservice.NewSessionDomainService(cfg, sessionRepo)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	accessTokenAppService, err := appservices.NewAccessTokenAppService(*cfg)
+	accessTokenAppService, err := appservices.NewAccessTokenAppService(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	passwordAppService, err := appservices.NewPasswordAppService(*cfg)
+	passwordAppService, err := appservices.NewPasswordAppService(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	authUseCases, err := usecase.NewAuthUseCase(*cfg,
+	authUseCases, err := usecase.NewAuthUseCase(
+		cfg,
 		userDomainService,
 		sessionDomainService,
 		passwordAppService,
 		accessTokenAppService,
 		sessionRepo,
+		userRepo,
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -100,12 +100,12 @@ func init() {
 		log.Fatal(err)
 	}
 
-	authInterceptor, err := interceptors.NewAuthInterceptor(*cfg, accessibleRoles())
+	authInterceptor, err := interceptors.NewAuthInterceptor(cfg, accessibleRoles())
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	server, err = grpc.NewServer(*cfg, authHandler, grpc.WithUnaryInterceptor(authInterceptor.Unary))
+	server, err = grpc.NewServer(cfg, authHandler, grpc.WithUnaryInterceptor(authInterceptor.Unary))
 	if err != nil {
 		log.Fatal(err)
 	}
