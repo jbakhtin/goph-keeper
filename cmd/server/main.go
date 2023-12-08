@@ -2,12 +2,13 @@ package main
 
 import (
 	"context"
-	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/output/repositories/postgres/v1"
-	repositories2 "github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/output/repositories/postgres/v1/repositories"
 	"log"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/output/repositories/postgres/v1"
+	repositories2 "github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/output/repositories/postgres/v1/repositories"
 
 	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/input/config/v1/drivers"
 	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/input/grpc/v1"

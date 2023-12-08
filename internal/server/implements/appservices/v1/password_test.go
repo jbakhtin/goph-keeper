@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/input/config/v1"
+	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/input/config/v1/drivers"
 	configInterface "github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/input/config/v1"
 )
 
@@ -37,7 +37,7 @@ func TestNewPasswordAppService(t *testing.T) {
 }
 
 func TestPasswordAppService_CheckPassword(t *testing.T) {
-	cfg, err := config.New().ParseEnv().Build()
+	cfg, err := drivers.NewFormENV()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -76,7 +76,7 @@ func TestPasswordAppService_CheckPassword(t *testing.T) {
 		{
 			name: "Successful",
 			fields: fields{
-				cfg: *cfg,
+				cfg: cfg,
 			},
 			args: args{
 				password: "password",
