@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"fmt"
+
 	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 
 	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/output/repositories/postgres/v1"
@@ -23,7 +24,7 @@ type SessionRepository struct {
 func NewSessionRepository(lgr logger.Interface, client postgres.Postgres) (*SessionRepository, error) { // ToDo: need remove client parameter
 	return &SessionRepository{
 		Postgres: &client,
-		lgr: lgr,
+		lgr:      lgr,
 	}, nil
 }
 

@@ -8,6 +8,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
+
 	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/input/config/v1/drivers"
 	configInterface "github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/input/config/v1"
 )
@@ -15,6 +17,7 @@ import (
 func TestNewPasswordAppService(t *testing.T) {
 	type args struct {
 		cfg configInterface.Interface
+		lgr logger.Interface
 	}
 	tests := []struct {
 		name    string
@@ -24,7 +27,7 @@ func TestNewPasswordAppService(t *testing.T) {
 	}{}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewPasswordAppService(tt.args.cfg)
+			got, err := NewPasswordAppService(tt.args.cfg, tt.args.lgr)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewPasswordAppService() error = %v, wantErr %v", err, tt.wantErr)
 				return

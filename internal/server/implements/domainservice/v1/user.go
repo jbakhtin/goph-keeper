@@ -2,6 +2,7 @@ package domainservice
 
 import (
 	"context"
+
 	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 
 	"github.com/jbakhtin/goph-keeper/internal/server/domain/models"
@@ -16,14 +17,14 @@ var _ domainservices.UserDomainServiceInterface = &userDomainService{}
 type userDomainService struct {
 	repo repositories.UserRepositoryInterface
 	cfg  config.Interface
-	lgr logger.Interface
+	lgr  logger.Interface
 }
 
 func NewUserDomainService(cfg config.Interface, lgr logger.Interface, repo repositories.UserRepositoryInterface) (*userDomainService, error) {
 	return &userDomainService{
 		cfg:  cfg,
 		repo: repo,
-		lgr: lgr,
+		lgr:  lgr,
 	}, nil
 }
 

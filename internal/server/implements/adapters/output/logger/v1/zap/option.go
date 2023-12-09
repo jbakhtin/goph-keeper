@@ -1,10 +1,11 @@
 package zap
 
 import (
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"io"
 	"time"
+
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 type LevelEnablerFunc func(lvl zapcore.Level) bool

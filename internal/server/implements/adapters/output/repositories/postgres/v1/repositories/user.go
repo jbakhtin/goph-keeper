@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+
 	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 
 	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/output/repositories/postgres/v1"
@@ -22,7 +23,7 @@ type UserRepository struct {
 func NewUserRepository(lgr logger.Interface, client postgres.Postgres) (*UserRepository, error) { // ToDo: need to remove postgres client
 	return &UserRepository{
 		Postgres: &client,
-		lgr: lgr,
+		lgr:      lgr,
 	}, nil
 }
 

@@ -2,13 +2,14 @@ package zap
 
 import (
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/input/config/v1"
 	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"os"
-	"time"
 )
 
 // ToDo: нужно рефакторить
@@ -20,17 +21,17 @@ var _ logger.Interface = &Logger{}
 
 const (
 	DevelopmentEnvironment = "development"
-	ProductionEnvironment = "production"
+	ProductionEnvironment  = "production"
 )
 
 type Logger struct {
 	zap.Logger
 }
 
-func NewLogger(cfg config.Interface) (*Logger, error) {
+func NewLogger(cfg config.Interface) (lgr *Logger, err error) {
 	var tops []teeOption
 
-	switch cfg.GetAppEnv()  {
+	switch cfg.GetAppEnv() {
 	case DevelopmentEnvironment:
 		tops = append(tops, teeOption{
 			W: os.Stdout,
@@ -57,12 +58,14 @@ func NewLogger(cfg config.Interface) (*Logger, error) {
 	}
 
 	cores := newTee(tops)
-	logger := &Logger{
+	lgr = &Logger{
 		Logger: *zap.New(zapcore.NewTee(cores...)),
 	}
-	defer logger.Sync()
+	defer func() {
+		err = lgr.Sync()
+	}()
 
-	return logger, nil
+	return lgr, err
 }
 
 func setUpLogLevel(cfg config.Interface, levelName string, levelCond LevelEnablerFunc) (*teeOption, error) {
@@ -82,27 +85,27 @@ func setUpLogLevel(cfg config.Interface, levelName string, levelCond LevelEnable
 	})
 
 	return &teeOption{
-		W: writer,
+		W:   writer,
 		Lef: levelCond,
 	}, nil
 }
 
-func (z Logger) Debug(msg string, fields... any) {
+func (z Logger) Debug(msg string, fields ...any) {
 	z.Logger.Debug(msg, zap.Any("args", fields))
 }
 
-func (z Logger) Info(msg string, fields... any) {
+func (z Logger) Info(msg string, fields ...any) {
 	z.Logger.Info(msg, zap.Any("args", fields))
 }
 
-func (z Logger) Warn(msg string, fields... any) {
+func (z Logger) Warn(msg string, fields ...any) {
 	z.Logger.Warn(msg, zap.Any("args", fields))
 }
 
-func (z Logger) Error(msg string, fields... any) {
+func (z Logger) Error(msg string, fields ...any) {
 	z.Logger.Error(msg, zap.Any("args", fields))
 }
 
-func (z Logger) Fatal(msg string, fields... any) {
+func (z Logger) Fatal(msg string, fields ...any) {
 	z.Logger.Fatal(msg, zap.Any("args", fields))
 }

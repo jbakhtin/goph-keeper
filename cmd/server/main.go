@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
+	"os/signal"
+	"syscall"
+
 	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/output/logger/v1/zap"
 	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/input/config/v1"
 	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
-	"os/signal"
-	"syscall"
 
 	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/output/repositories/postgres/v1"
 	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/output/repositories/postgres/v1/repositories"
@@ -24,10 +25,10 @@ import (
 )
 
 var (
-	server   *grpc.Server
-	clr      *closer.Closer
-	lgr logger.Interface
-	cfg config.Interface
+	server *grpc.Server
+	clr    *closer.Closer
+	lgr    logger.Interface
+	cfg    config.Interface
 )
 
 func accessibleRoles() map[string][]string {
@@ -76,7 +77,7 @@ func init() {
 		panic(err)
 	}
 
-	sessionDomainService, err := domainservice.NewSessionDomainService(cfg, lgr,  sessionRepo)
+	sessionDomainService, err := domainservice.NewSessionDomainService(cfg, lgr, sessionRepo)
 	if err != nil {
 		panic(err)
 	}

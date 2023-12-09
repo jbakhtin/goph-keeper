@@ -3,8 +3,9 @@ package handlers
 import (
 	"context"
 	"fmt"
-	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 	"time"
+
+	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 
 	"github.com/jbakhtin/goph-keeper/internal/server/domain/types"
 	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/input/grpc/v1/auth"
@@ -33,7 +34,7 @@ func NewAuthHandler(lgr logger.Interface, authUseCase usecases.AuthUseCaseInterf
 	}
 
 	return &AuthHandler{
-		lgr: lgr,
+		lgr:         lgr,
 		authUseCase: authUseCase,
 		validator:   validator,
 	}, nil

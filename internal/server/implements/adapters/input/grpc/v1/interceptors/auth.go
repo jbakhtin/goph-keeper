@@ -2,8 +2,9 @@ package interceptors
 
 import (
 	"context"
-	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 	"strings"
+
+	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 
 	"github.com/jbakhtin/goph-keeper/internal/server/domain/types"
 	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/input/config/v1"
@@ -17,7 +18,7 @@ import (
 
 type AuthInterceptor struct {
 	cfg             config.Interface
-	lgr logger.Interface
+	lgr             logger.Interface
 	accessibleRoles map[string][]string
 }
 

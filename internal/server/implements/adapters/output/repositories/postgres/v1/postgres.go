@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"embed"
+
 	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/input/config/v1"
 
 	"github.com/pkg/errors"

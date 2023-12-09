@@ -3,8 +3,9 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 	"net"
+
+	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 
 	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/input/config/v1"
 	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/input/grpc/v1/auth"
