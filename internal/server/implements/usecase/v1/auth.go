@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"database/sql"
+	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 	"time"
 
 	"github.com/jbakhtin/goph-keeper/internal/server/domain/models"
@@ -21,6 +22,7 @@ var _ usecases.AuthUseCaseInterface = &AuthUseCase{}
 
 type AuthUseCase struct {
 	cfg                   config.Interface
+	lgr logger.Interface
 	userDomainService     domainservices.UserDomainServiceInterface
 	sessionDomainService  domainservices.SessionDomainServiceInterface
 	passwordAppService    appservices.PasswordAppServiceInterface
@@ -31,6 +33,7 @@ type AuthUseCase struct {
 
 func NewAuthUseCase(
 	cfg config.Interface,
+	lgr logger.Interface,
 	userDomainService domainservices.UserDomainServiceInterface,
 	sessionDomainService domainservices.SessionDomainServiceInterface,
 	passwordAppService appservices.PasswordAppServiceInterface,
@@ -39,6 +42,7 @@ func NewAuthUseCase(
 	userRepository repositories.UserRepositoryInterface) (*AuthUseCase, error) {
 	return &AuthUseCase{
 		cfg:                   cfg,
+		lgr: lgr,
 		userDomainService:     userDomainService,
 		passwordAppService:    passwordAppService,
 		accessTokenAppService: accessTokenAppService,

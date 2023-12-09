@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"fmt"
+	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 
 	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/output/repositories/postgres/v1"
 	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/output/repositories/postgres/v1/query"
@@ -16,11 +17,13 @@ var _ repositories.SessionRepositoryInterface = &SessionRepository{}
 
 type SessionRepository struct {
 	*postgres.Postgres
+	lgr logger.Interface
 }
 
-func NewSessionRepository(client postgres.Postgres) (*SessionRepository, error) { // ToDo: need remove client parameter
+func NewSessionRepository(lgr logger.Interface, client postgres.Postgres) (*SessionRepository, error) { // ToDo: need remove client parameter
 	return &SessionRepository{
-		&client,
+		Postgres: &client,
+		lgr: lgr,
 	}, nil
 }
 

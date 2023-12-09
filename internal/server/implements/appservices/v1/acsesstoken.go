@@ -1,6 +1,7 @@
 package appservices
 
 import (
+	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 	"time"
 
 	types2 "github.com/jbakhtin/goph-keeper/internal/server/domain/types"
@@ -15,11 +16,13 @@ var _ appservices.AccessTokenAppServiceInterface = &AccessTokenAppService{}
 
 type AccessTokenAppService struct {
 	cfg config.Interface
+	lgr logger.Interface
 }
 
-func NewAccessTokenAppService(cfg config.Interface) (*AccessTokenAppService, error) {
+func NewAccessTokenAppService(cfg config.Interface, lgr logger.Interface) (*AccessTokenAppService, error) {
 	return &AccessTokenAppService{
 		cfg: cfg,
+		lgr: lgr,
 	}, nil
 }
 

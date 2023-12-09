@@ -29,3 +29,6 @@ go.work
 
 # sandbox
 cmd/sandbox
+
+# logger
+storage/logs

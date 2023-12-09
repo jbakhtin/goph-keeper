@@ -3,10 +3,11 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 	"time"
 
-	types2 "github.com/jbakhtin/goph-keeper/internal/server/domain/types"
-	auth2 "github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/input/grpc/v1/auth"
+	"github.com/jbakhtin/goph-keeper/internal/server/domain/types"
+	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/input/grpc/v1/auth"
 	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/usecases/v1"
 
 	"github.com/bufbuild/protovalidate-go"
@@ -16,27 +17,29 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-var _ auth2.AuthServiceServer = &AuthHandler{}
+var _ auth.AuthServiceServer = &AuthHandler{}
 
 type AuthHandler struct {
-	auth2.UnimplementedAuthServiceServer
+	lgr logger.Interface
+	auth.UnimplementedAuthServiceServer
 	authUseCase usecases.AuthUseCaseInterface
 	validator   *protovalidate.Validator
 }
 
-func NewAuthHandler(authUseCase usecases.AuthUseCaseInterface) (*AuthHandler, error) {
+func NewAuthHandler(lgr logger.Interface, authUseCase usecases.AuthUseCaseInterface) (*AuthHandler, error) {
 	validator, err := protovalidate.New()
 	if err != nil {
 		return nil, err
 	}
 
 	return &AuthHandler{
+		lgr: lgr,
 		authUseCase: authUseCase,
 		validator:   validator,
 	}, nil
 }
 
-func (h *AuthHandler) Login(ctx context.Context, request *auth2.LoginRequest) (*auth2.LoginResponse, error) {
+func (h *AuthHandler) Login(ctx context.Context, request *auth.LoginRequest) (*auth.LoginResponse, error) {
 	if err := h.validator.Validate(request); err != nil {
 		return nil, errors.Wrap(err, "request validation")
 	}
@@ -47,20 +50,20 @@ func (h *AuthHandler) Login(ctx context.Context, request *auth2.LoginRequest) (*
 		return nil, errors.New("get fingerprint from context")
 	}
 
-	tokensPair, err := h.authUseCase.LoginUser(ctx, request.Email, request.Password, types2.FingerPrint{
+	tokensPair, err := h.authUseCase.LoginUser(ctx, request.Email, request.Password, types.FingerPrint{
 		"addr": fingerprint.Addr.String(),
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "login user")
 	}
 
-	return &auth2.LoginResponse{
+	return &auth.LoginResponse{
 		AccessToken:  string(tokensPair.AccessToken),
 		RefreshToken: string(tokensPair.RefreshToken),
 	}, nil
 }
 
-func (h *AuthHandler) Register(ctx context.Context, request *auth2.RegisterRequest) (*emptypb.Empty, error) {
+func (h *AuthHandler) Register(ctx context.Context, request *auth.RegisterRequest) (*emptypb.Empty, error) {
 	if err := h.validator.Validate(request); err != nil {
 		return nil, errors.Wrap(err, "request validation")
 	}
@@ -73,36 +76,35 @@ func (h *AuthHandler) Register(ctx context.Context, request *auth2.RegisterReque
 	return &emptypb.Empty{}, nil
 }
 
-func (h *AuthHandler) RefreshAccessToken(ctx context.Context, request *emptypb.Empty) (*auth2.RefreshTokenResponse, error) {
+func (h *AuthHandler) RefreshAccessToken(ctx context.Context, request *emptypb.Empty) (*auth.RefreshTokenResponse, error) {
 	if err := h.validator.Validate(request); err != nil {
 		return nil, errors.Wrap(err, "request validation")
 	}
 
 	values := metadata.ValueFromIncomingContext(ctx, "refresh-token")
 
-	tokensPair, err := h.authUseCase.RefreshToken(ctx, types2.RefreshToken(values[0]))
+	tokensPair, err := h.authUseCase.RefreshToken(ctx, types.RefreshToken(values[0]))
 	if err != nil {
 		return nil, errors.Wrap(err, "refresh access token")
 	}
 
-	return &auth2.RefreshTokenResponse{
+	return &auth.RefreshTokenResponse{
 		AccessToken:  string(tokensPair.AccessToken),
 		RefreshToken: string(tokensPair.RefreshToken),
 	}, nil
 }
 
-func (h *AuthHandler) Logout(ctx context.Context, request *auth2.LogoutRequest) (*auth2.LogoutResponse, error) {
+func (h *AuthHandler) Logout(ctx context.Context, request *auth.LogoutRequest) (*auth.LogoutResponse, error) {
 	if err := h.validator.Validate(request); err != nil {
 		return nil, errors.Wrap(err, "request validation")
 	}
 
-	var logoutType types2.LogoutType
+	var logoutType types.LogoutType
 	switch request.Type {
-	case auth2.LogoutType_TYPE_ALL:
-		fmt.Println("LogoutType_TYPE_ALL")
-		logoutType = types2.LogoutTypeAll
-	case auth2.LogoutType_TYPE_UNSPECIFIED:
-		logoutType = types2.LogoutTypeThis
+	case auth.LogoutType_TYPE_ALL:
+		logoutType = types.LogoutTypeAll
+	case auth.LogoutType_TYPE_UNSPECIFIED:
+		logoutType = types.LogoutTypeThis
 	default:
 		return nil, errors.New("logout type is not allowed")
 	}
@@ -112,9 +114,9 @@ func (h *AuthHandler) Logout(ctx context.Context, request *auth2.LogoutRequest) 
 		return nil, errors.Wrap(err, "close sessions")
 	}
 
-	var pbSessions []*auth2.Session
+	var pbSessions []*auth.Session
 	for _, session := range sessions {
-		pbSessions = append(pbSessions, &auth2.Session{
+		pbSessions = append(pbSessions, &auth.Session{
 			ID:        uint64(*session.ID),
 			UserID:    uint64(session.UserID),
 			CreatedAt: time.Time(*session.CreatedAt).String(),
@@ -124,7 +126,7 @@ func (h *AuthHandler) Logout(ctx context.Context, request *auth2.LogoutRequest) 
 
 	fmt.Println("test")
 
-	return &auth2.LogoutResponse{
+	return &auth.LogoutResponse{
 		Type:     request.Type,
 		Sessions: pbSessions,
 	}, nil

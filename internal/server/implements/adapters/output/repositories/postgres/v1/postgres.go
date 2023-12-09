@@ -3,8 +3,6 @@ package postgres
 import (
 	"database/sql"
 	"embed"
-	"fmt"
-
 	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/input/config/v1"
 
 	"github.com/pkg/errors"
@@ -26,8 +24,6 @@ func New(cfg config.Interface) (*Postgres, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "db open")
 	}
-
-	fmt.Println(cfg.GetDataBaseDriver(), cfg.GetDataBaseDSN())
 
 	err = db.Ping()
 	if err != nil {

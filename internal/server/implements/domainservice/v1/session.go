@@ -2,6 +2,7 @@ package domainservice
 
 import (
 	"context"
+	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 
 	"github.com/jbakhtin/goph-keeper/internal/server/domain/models"
 	"github.com/jbakhtin/goph-keeper/internal/server/domain/types"
@@ -16,13 +17,15 @@ var _ domainservices.SessionDomainServiceInterface = &sessionDomainService{}
 
 type sessionDomainService struct {
 	cfg  config.Interface
+	lgr logger.Interface
 	repo repositories.SessionRepositoryInterface
 }
 
-func NewSessionDomainService(cfg config.Interface, repo repositories.SessionRepositoryInterface) (*sessionDomainService, error) {
+func NewSessionDomainService(cfg config.Interface, lgr logger.Interface, repo repositories.SessionRepositoryInterface) (*sessionDomainService, error) {
 	return &sessionDomainService{
 		cfg:  cfg,
 		repo: repo,
+		lgr: lgr,
 	}, nil
 }
 

@@ -2,7 +2,7 @@ package interceptors
 
 import (
 	"context"
-	"fmt"
+	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 	"strings"
 
 	"github.com/jbakhtin/goph-keeper/internal/server/domain/types"
@@ -17,12 +17,14 @@ import (
 
 type AuthInterceptor struct {
 	cfg             config.Interface
+	lgr logger.Interface
 	accessibleRoles map[string][]string
 }
 
-func NewAuthInterceptor(cfg config.Interface, accessibleRoles map[string][]string) (*AuthInterceptor, error) {
+func NewAuthInterceptor(cfg config.Interface, lgr logger.Interface, accessibleRoles map[string][]string) (*AuthInterceptor, error) {
 	return &AuthInterceptor{
 		cfg:             cfg,
+		lgr:             lgr,
 		accessibleRoles: accessibleRoles,
 	}, nil
 }
@@ -46,21 +48,14 @@ func (i *AuthInterceptor) authorize(ctx context.Context, method string) (context
 		return nil, apperror.ErrNotAuthorized
 	}
 
-	fmt.Println(rawAccessToken)
-
 	bearerToken := strings.Split(rawAccessToken[0], " ")
 	if bearerToken[0] != "Bearer" {
 		return nil, apperror.ErrNotAuthorized
 	}
 
-	fmt.Println(bearerToken[1])
-
 	token, err := jwt.ParseWithClaims(bearerToken[1], &types.JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(i.cfg.GetAppKey()), nil
 	})
-
-	fmt.Println(token)
-	fmt.Println(token.Valid)
 
 	if err != nil || !token.Valid {
 		return nil, apperror.ErrNotAuthorized
@@ -70,8 +65,6 @@ func (i *AuthInterceptor) authorize(ctx context.Context, method string) (context
 	if !ok {
 		return nil, apperror.ErrNotAuthorized
 	}
-
-	fmt.Println(customClaims)
 
 	ctx = context.WithValue(ctx, types.ContextKeyUserID, customClaims.Data.UserID)
 	ctx = context.WithValue(ctx, types.ContextKeySessionID, customClaims.Data.SessionID)

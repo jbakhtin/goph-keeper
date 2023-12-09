@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
-	"log"
+	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/output/logger/v1/zap"
+	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/input/config/v1"
+	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/output/repositories/postgres/v1"
-	repositories2 "github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/output/repositories/postgres/v1/repositories"
+	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/output/repositories/postgres/v1/repositories"
 
 	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/input/config/v1/drivers"
 	"github.com/jbakhtin/goph-keeper/internal/server/implements/adapters/input/grpc/v1"
@@ -18,15 +19,15 @@ import (
 	"github.com/jbakhtin/goph-keeper/internal/server/implements/domainservice/v1"
 	"github.com/jbakhtin/goph-keeper/internal/server/implements/usecase/v1"
 
-	"github.com/go-faster/errors"
 	"github.com/jbakhtin/rtagent/pkg/closer"
 	"google.golang.org/grpc/reflection"
 )
 
 var (
-	pgClient *postgres.Postgres
 	server   *grpc.Server
 	clr      *closer.Closer
+	lgr logger.Interface
+	cfg config.Interface
 )
 
 func accessibleRoles() map[string][]string {
@@ -43,48 +44,56 @@ func accessibleRoles() map[string][]string {
 func init() {
 	var err error
 
-	cfg, err := drivers.NewFormENV()
+	cfg, err = drivers.NewFormENV()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	pgClient, err = postgres.New(cfg) // ToDo: need to move inside the constructor
+	lgr, err = zap.NewLogger(cfg)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	userRepo, err := repositories2.NewUserRepository(*pgClient)
+	lgr.Info("app configuration file", cfg)
+
+	pgClient, err := postgres.New(cfg) // ToDo: need to move inside the constructor
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	sessionRepo, err := repositories2.NewSessionRepository(*pgClient)
+	userRepo, err := repositories.NewUserRepository(lgr, *pgClient)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	userDomainService, err := domainservice.NewUserDomainService(cfg, userRepo)
+	sessionRepo, err := repositories.NewSessionRepository(lgr, *pgClient)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	sessionDomainService, err := domainservice.NewSessionDomainService(cfg, sessionRepo)
+	userDomainService, err := domainservice.NewUserDomainService(cfg, lgr, userRepo)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	accessTokenAppService, err := appservices.NewAccessTokenAppService(cfg)
+	sessionDomainService, err := domainservice.NewSessionDomainService(cfg, lgr,  sessionRepo)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	passwordAppService, err := appservices.NewPasswordAppService(cfg)
+	accessTokenAppService, err := appservices.NewAccessTokenAppService(cfg, lgr)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
+	}
+
+	passwordAppService, err := appservices.NewPasswordAppService(cfg, lgr)
+	if err != nil {
+		panic(err)
 	}
 
 	authUseCases, err := usecase.NewAuthUseCase(
 		cfg,
+		lgr,
 		userDomainService,
 		sessionDomainService,
 		passwordAppService,
@@ -93,28 +102,28 @@ func init() {
 		userRepo,
 	)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	authHandler, err := handlers.NewAuthHandler(authUseCases)
+	authHandler, err := handlers.NewAuthHandler(lgr, authUseCases)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	authInterceptor, err := interceptors.NewAuthInterceptor(cfg, accessibleRoles())
+	authInterceptor, err := interceptors.NewAuthInterceptor(cfg, lgr, accessibleRoles())
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	server, err = grpc.NewServer(cfg, authHandler, grpc.WithUnaryInterceptor(authInterceptor.Unary))
+	server, err = grpc.NewServer(cfg, lgr, authHandler, grpc.WithUnaryInterceptor(authInterceptor.Unary))
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	reflection.Register(server)
 
 	if clr, err = closer.New().WithFuncs(server.Shutdown).Build(); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 }
 
@@ -123,15 +132,17 @@ func main() {
 	defer cancel()
 
 	if err := server.Start(osCtx); err != nil {
-		log.Fatal(errors.Wrap(err, "start server"))
+		lgr.Error(err.Error())
 	}
+
+	lgr.Info("server started", &server)
 
 	// Gracefully shut down
 	<-osCtx.Done()
-	withTimeout, cancelShutdownProc := context.WithTimeout(context.Background(), time.Second*10)
+	withTimeout, cancelShutdownProc := context.WithTimeout(context.Background(), cfg.GetShutdownTimeout())
 	defer cancelShutdownProc()
 
 	if err := clr.Close(withTimeout); err != nil {
-		log.Fatal(errors.Wrap(err, "shutdown"))
+		lgr.Fatal(err.Error(), nil)
 	}
 }

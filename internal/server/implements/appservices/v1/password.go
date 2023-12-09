@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"fmt"
+	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/output/logger/v1"
 
 	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/appservices/v1"
 	"github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/input/config/v1"
@@ -13,11 +14,13 @@ var _ appservices.PasswordAppServiceInterface = &PasswordAppService{}
 
 type PasswordAppService struct {
 	cfg config.Interface
+	lgr logger.Interface
 }
 
-func NewPasswordAppService(cfg config.Interface) (*PasswordAppService, error) {
+func NewPasswordAppService(cfg config.Interface, lgr logger.Interface) (*PasswordAppService, error) {
 	return &PasswordAppService{
 		cfg: cfg,
+		lgr: lgr,
 	}, nil
 }
 
