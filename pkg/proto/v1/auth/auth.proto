@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package v1.auth;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/jbakhtin/goph-keeper/pkg/proto/v1/auth";
+
+service AuthService {
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Register(RegisterRequest) returns (google.protobuf.Empty);
+  rpc RefreshAccessToken(google.protobuf.Empty) returns (RefreshTokenResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+}
+
+message LoginRequest {
+  string email = 1 [
+    (buf.validate.field).string.email = true,
+    (buf.validate.field).required = true
+  ];
+
+  string password = 2 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string = {
+      pattern:   "[a-zA-Z0-9]{6,18}",
+      max_bytes: 256,
+    }
+  ];
+}
+
+message LoginResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+}
+
+message RegisterRequest {
+  string email = 1 [
+    (buf.validate.field).string.email = true,
+    (buf.validate.field).required = true
+  ];
+
+  option (buf.validate.message).cel = {
+    id: "value.comparison",
+    message: "the condition does not satisfy",
+    expression: "this.password == this.password_confirmation"
+  };
+
+  string password = 2 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string = {
+      pattern:   "[a-zA-Z0-9]{6,18}",
+      max_bytes: 256,
+    }
+  ];
+
+  string password_confirmation = 3 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string = {
+      pattern:   "[a-zA-Z0-9]{6,18}",
+      max_bytes: 256,
+    }
+  ];
+}
+
+message RefreshTokenResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+}
+
+enum LogoutType {
+  TYPE_UNSPECIFIED = 0;
+  TYPE_ALL = 1;
+}
+
+message LogoutRequest {
+  LogoutType type = 1;
+}
+
+message Session {
+  uint64 id = 1;
+  uint64 user_id = 2;
+  uint64 refresh_token = 3;
+  uint64 finger_print = 4;
+  string created_at = 5;
+  string closed_at = 6;
+  string updated_at = 7;
+}
+
+message LogoutResponse {
+  LogoutType type = 1;
+  repeated Session sessions = 2;
+}
