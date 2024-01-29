@@ -6,3 +6,15 @@ import "google/protobuf/empty.proto";
 import "buf/validate/validate.proto";
 
 option go_package = "github.com/jbakhtin/goph-keeper/pkg/proto/v1/kv";
+
+service KeyValueService {
+  rpc Create(CrateRequest) returns (google.protobuf.Empty);
+//  rpc Delete(RegisterRequest) returns (google.protobuf.Empty);
+//  rpc Update(google.protobuf.Empty) returns (RefreshTokenResponse);
+}
+
+message CrateRequest {
+  string key = 1;
+  string value = 2;
+  string metadata = 3;
+}

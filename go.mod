@@ -8,6 +8,7 @@ require (
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/go-faster/errors v0.6.1
 	github.com/golang-jwt/jwt/v5 v5.0.0
+	github.com/google/uuid v1.3.1
 	github.com/jackc/pgx/v5 v5.4.3
 	github.com/jbakhtin/rtagent v0.0.0-20231014154655-d466716a6058
 	github.com/pkg/errors v0.9.1

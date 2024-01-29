@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	auth2 "github.com/jbakhtin/goph-keeper/gen/go/v1/auth"
+	"github.com/jbakhtin/goph-keeper/gen/go/v1/kv"
 	"log"
 	"os"
-
-	auth2 "github.com/jbakhtin/goph-keeper/internal/server/interfaces/ports/input/grpc/v1/auth"
 
 	"github.com/go-faster/errors"
 	"github.com/jbakhtin/goph-keeper/internal/client/infrastructure/persistance/grpc/credentials"
@@ -40,6 +40,8 @@ func main() {
 
 	refreshTokenCMD := flag.NewFlagSet("refreshtoken", flag.ExitOnError)
 
+	newKeyValueCMD := flag.NewFlagSet("newkeyvalue", flag.ExitOnError)
+
 	if len(os.Args) < 2 {
 		os.Exit(1)
 	}
@@ -59,6 +61,11 @@ func main() {
 		}
 	case "logout":
 		err := Logout(logoutCMD, logoutType)
+		if err != nil {
+			log.Fatal(err)
+		}
+	case "newkeyvalue":
+		err := NewKeyValue(newKeyValueCMD)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -195,6 +202,33 @@ func Registration(cmd *flag.FlagSet, email, password, passwordConfirmation *stri
 	}
 
 	fmt.Println(response, err)
+}
+
+func NewKeyValue(cmd *flag.FlagSet) error {
+	conn, err := grpc.Dial(":3200",
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithPerRPCCredentials(credentials.NewJWTCredentials()),
+		)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	client := kv.NewKeyValueServiceClient(conn)
+
+	pbRegisterRequest := &kv.CrateRequest{
+		Key:                "password",
+		Value:             "test",
+		Metadata: "my new test password",
+	}
+
+	response, err := client.Create(context.TODO(), pbRegisterRequest)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(response, err)
+
+	return nil
 }
 
 func openFile(path string, flag int, perm os.FileMode) (*os.File, error) {

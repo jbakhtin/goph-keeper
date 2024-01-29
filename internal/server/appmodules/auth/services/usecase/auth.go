@@ -1,0 +1,162 @@
+package usecase
+
+import (
+	"context"
+	"database/sql"
+	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/models"
+	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/types"
+	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	"time"
+
+	"github.com/jbakhtin/goph-keeper/internal/server/apperror"
+	"github.com/pkg/errors"
+)
+
+type Config interface {
+	GetAccessTokenExpire() time.Duration
+	GetSessionExpire() time.Duration
+}
+
+type PasswordService interface {
+	HashPassword(password string) (string, error)
+	CheckPassword(password, need string) (bool, error)
+}
+
+type AccessTokenService interface {
+	Create(userID types.ID, sessionID types.ID, duration time.Duration) (*types.AccessToken, error)
+}
+
+type AuthUseCase struct {
+	cfg                Config
+	lgr                secondary_ports.Logger
+	passwordAppService PasswordService
+	accessTokenAppService AccessTokenService
+	sessionRepository     secondary_ports.SessionRepository
+	userRepository        secondary_ports.UserRepository
+}
+
+func NewAuthUseCase(
+	cfg Config,
+	lgr secondary_ports.Logger,
+	passwordAppService PasswordService,
+	accessTokenAppService AccessTokenService,
+	sessionRepository secondary_ports.SessionRepository,
+	userRepository secondary_ports.UserRepository) (*AuthUseCase, error) {
+	return &AuthUseCase{
+		cfg:                   cfg,
+		lgr:                   lgr,
+		passwordAppService:    passwordAppService,
+		accessTokenAppService: accessTokenAppService,
+		sessionRepository:     sessionRepository,
+		userRepository:        userRepository,
+	}, nil
+}
+
+func (us *AuthUseCase) RegisterUser(ctx context.Context, email, rawPassword string) (*models.User, error) {
+	user, err := us.userRepository.GetUserByEmail(ctx, email)
+	if err != nil && err != sql.ErrNoRows {
+		return nil, errors.Wrap(err, "get user by email")
+	}
+
+	if user != nil {
+		return nil, apperror.ErrUserAlreadyExists
+	}
+
+	hashedPassword, err := us.passwordAppService.HashPassword(rawPassword)
+	if err != nil {
+		return nil, errors.Wrap(err, "hash password")
+	}
+
+	user, err = us.userRepository.SaveUser(ctx, email, hashedPassword) // ToDo: need to pass model
+	if err != nil {
+		return nil, errors.Wrap(err, "save new user")
+	}
+
+	return user, nil
+}
+
+func (us *AuthUseCase) LoginUser(ctx context.Context, email string, password string, fingerPrint types.FingerPrint) (*types.TokensPair, error) {
+	user, err := us.userRepository.GetUserByEmail(ctx, email)
+	if err != nil {
+		return nil, errors.Wrap(err, "get user by email")
+	}
+
+	if ok, err := us.passwordAppService.CheckPassword(password, user.Password); !ok {
+		return nil, errors.New("check password")
+	} else if err != nil {
+		return nil, errors.Wrap(err, "check password")
+	}
+
+	session, err := us.sessionRepository.SaveSession(ctx, *user.ID, fingerPrint, types.TimeStamp(time.Now().Add(us.cfg.GetSessionExpire())))
+	if err != nil {
+		return nil, errors.Wrap(err, "create session") //ToDo: mistake
+	}
+
+	accessToken, err := us.accessTokenAppService.Create(*user.ID, *session.ID, us.cfg.GetAccessTokenExpire())
+	if err != nil {
+		return nil, errors.Wrap(err, "create access_token")
+	}
+
+	return &types.TokensPair{
+		AccessToken:  *accessToken,
+		RefreshToken: session.RefreshToken,
+	}, nil
+}
+
+func (us *AuthUseCase) RefreshToken(ctx context.Context, refreshToken types.RefreshToken) (*types.TokensPair, error) {
+	session, err := us.sessionRepository.GetSessionByRefreshToken(ctx, refreshToken)
+	if err != nil {
+		return nil, errors.Wrap(err, "get session by refresh_token")
+	}
+
+	session, err = us.sessionRepository.UpdateRefreshTokenByID(ctx, *session.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "update refresh token")
+	}
+
+	accessToken, err := us.accessTokenAppService.Create(session.UserID, *session.ID, us.cfg.GetAccessTokenExpire()) // ToDo: mode access_token duration to cfg
+	if err != nil {
+		return nil, errors.Wrap(err, "create access_token")
+	}
+
+	return &types.TokensPair{
+		AccessToken:  *accessToken,
+		RefreshToken: session.RefreshToken,
+	}, nil
+}
+
+func (us *AuthUseCase) Logout(ctx context.Context, logoutType types.LogoutType) (sessions []*models.Session, err error) {
+	var sessionID = ctx.Value(types.ContextKeySessionID)
+	var userID = ctx.Value(types.ContextKeyUserID)
+
+	// ToDo: добавить проверку на истечение срока жизни сессии и то что сессия уже закрыта
+	switch logoutType {
+	case types.LogoutTypeThis:
+		session, err := us.sessionRepository.GetSessionByID(ctx, sessionID.(types.ID))
+		if err != nil {
+			return nil, errors.Wrap(err, "get session by session id")
+		}
+
+		session, err = us.sessionRepository.CloseSessionByID(ctx, *session.ID)
+		if err != nil {
+			return nil, errors.Wrap(err, "close current session by session_id")
+		}
+		sessions = append(sessions, session)
+	case types.LogoutTypeAll:
+		sessions, err = us.sessionRepository.GetSessionsByUserID(ctx, userID.(types.ID))
+		if err != nil {
+			return nil, errors.Wrap(err, "get sessions by user_id")
+		}
+
+		for index, session := range sessions {
+			session, err = us.sessionRepository.CloseSessionByID(ctx, *session.ID)
+			if err != nil {
+				return nil, errors.Wrap(err, "close all sessions by user_id")
+			}
+
+			sessions[index] = session
+		}
+	}
+
+	return sessions, nil
+}

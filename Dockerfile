@@ -5,7 +5,7 @@ FROM golang:1.21
 # Set destination for COPY
 WORKDIR /app
 
-# Download Go modules
+# Download Go appmodules
 COPY go.mod .
 RUN go mod download
 COPY . .

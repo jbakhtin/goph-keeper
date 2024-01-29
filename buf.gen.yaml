@@ -8,10 +8,10 @@ managed:
       - buf.build/bufbuild/protovalidate
 plugins:
   - plugin: go
-    out: internal/server/core/interfaces/ports/input/grpc
+    out: gen/go
     opt:
       - paths=source_relative
   - plugin: go-grpc
-    out: internal/server/core/interfaces/ports/input/grpc
+    out: gen/go
     opt:
       - paths=source_relative
