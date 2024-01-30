@@ -2,27 +2,17 @@ package types
 
 import "github.com/golang-jwt/jwt/v5"
 
-type AccessToken string
-
 type TokensPair struct {
-	AccessToken  AccessToken
-	RefreshToken RefreshToken
+	AccessToken  string
+	RefreshToken string
 }
 
 type UserData struct {
-	UserID    ID `json:"user_id,omitempty"`
-	SessionID ID `json:"session_id,omitempty"`
+	UserID    int `json:"user_id,omitempty"`
+	SessionID int `json:"session_id,omitempty"`
 }
 
 type JWTClaims struct {
 	jwt.RegisteredClaims
 	Data UserData `json:"data,omitempty"`
 }
-
-//token, err := jwt.ParseWithClaims(
-//	signedToken,
-//	&JWTClaim{},
-//	func(token *jwt.Token) (interface{}, error) {
-//		return []byte(jwtKey), nil
-//	},
-//)

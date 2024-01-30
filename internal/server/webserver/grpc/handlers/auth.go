@@ -2,15 +2,12 @@ package handlers
 
 import (
 	"context"
-	"fmt"
-	"github.com/jbakhtin/goph-keeper/gen/go/v1/auth"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/types"
-	primary_ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/primary"
-	"github.com/jbakhtin/goph-keeper/internal/server/logger/zap"
-	"time"
-
 	"github.com/bufbuild/protovalidate-go"
 	"github.com/go-faster/errors"
+	"github.com/jbakhtin/goph-keeper/gen/go/v1/auth"
+	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/models"
+	primary_ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/primary"
+	"github.com/jbakhtin/goph-keeper/internal/server/logger/zap"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -49,7 +46,7 @@ func (h *AuthHandler) Login(ctx context.Context, request *auth.LoginRequest) (*a
 		return nil, errors.New("get fingerprint from context")
 	}
 
-	tokensPair, err := h.authUseCase.LoginUser(ctx, request.Email, request.Password, types.FingerPrint{
+	tokensPair, err := h.authUseCase.LoginUser(ctx, request.Email, request.Password, models.FingerPrint{ // ToDo: need move to fabric
 		"addr": fingerprint.Addr.String(),
 	})
 	if err != nil {
@@ -57,8 +54,8 @@ func (h *AuthHandler) Login(ctx context.Context, request *auth.LoginRequest) (*a
 	}
 
 	return &auth.LoginResponse{
-		AccessToken:  string(tokensPair.AccessToken),
-		RefreshToken: string(tokensPair.RefreshToken),
+		AccessToken:  tokensPair.AccessToken,
+		RefreshToken: tokensPair.RefreshToken,
 	}, nil
 }
 
@@ -80,16 +77,16 @@ func (h *AuthHandler) RefreshAccessToken(ctx context.Context, request *emptypb.E
 		return nil, errors.Wrap(err, "request validation")
 	}
 
-	values := metadata.ValueFromIncomingContext(ctx, "refresh-token")
+	values := metadata.ValueFromIncomingContext(ctx, "refresh-token") // ToDo need move to another place
 
-	tokensPair, err := h.authUseCase.RefreshToken(ctx, types.RefreshToken(values[0]))
+	tokensPair, err := h.authUseCase.RefreshToken(ctx, values[0])
 	if err != nil {
 		return nil, errors.Wrap(err, "refresh access token")
 	}
 
 	return &auth.RefreshTokenResponse{
-		AccessToken:  string(tokensPair.AccessToken),
-		RefreshToken: string(tokensPair.RefreshToken),
+		AccessToken:  tokensPair.AccessToken,
+		RefreshToken: tokensPair.RefreshToken,
 	}, nil
 }
 
@@ -98,16 +95,7 @@ func (h *AuthHandler) Logout(ctx context.Context, request *auth.LogoutRequest) (
 		return nil, errors.Wrap(err, "request validation")
 	}
 
-	var logoutType types.LogoutType
-	switch request.Type {
-	case auth.LogoutType_TYPE_ALL:
-		logoutType = types.LogoutTypeAll
-	case auth.LogoutType_TYPE_UNSPECIFIED:
-		logoutType = types.LogoutTypeThis
-	default:
-		return nil, errors.New("logout type is not allowed")
-	}
-
+	var logoutType = primary_ports.LogOutType(request.Type)
 	sessions, err := h.authUseCase.Logout(ctx, logoutType)
 	if err != nil {
 		return nil, errors.Wrap(err, "close sessions")
@@ -118,12 +106,10 @@ func (h *AuthHandler) Logout(ctx context.Context, request *auth.LogoutRequest) (
 		pbSessions = append(pbSessions, &auth.Session{
 			Id:        uint64(*session.ID),
 			UserId:    uint64(session.UserID),
-			CreatedAt: time.Time(*session.CreatedAt).String(),
-			ClosedAt:  time.Time(*session.ClosedAt).String(),
+			CreatedAt: session.CreatedAt.String(),
+			ClosedAt:  session.ClosedAt.String(),
 		})
 	}
-
-	fmt.Println("test")
 
 	return &auth.LogoutResponse{
 		Type:     request.Type,

@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/models"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/types"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 	"github.com/jbakhtin/goph-keeper/internal/server/logger/zap"
 	"github.com/jbakhtin/goph-keeper/internal/server/storage/postgres/query"
@@ -19,14 +18,14 @@ type UserRepository struct {
 
 func NewUserRepository(lgr *zap.Logger, client *sql.DB) (*UserRepository, error) { // ToDo: need to remove mock client
 	return &UserRepository{
-		DB: client,
-		lgr:      lgr,
+		DB:  client,
+		lgr: lgr,
 	}, nil
 }
 
-func (u *UserRepository) SaveUser(ctx context.Context, email, password string) (*models.User, error) {
+func (u *UserRepository) SaveUser(ctx context.Context, user models.User) (*models.User, error) {
 	var stored models.User
-	err := u.QueryRowContext(ctx, query.CreateUser, email, password).
+	err := u.QueryRowContext(ctx, query.CreateUser, user.Email, user.Password).
 		Scan(&stored.ID,
 			&stored.Email,
 			&stored.Password,
@@ -39,7 +38,7 @@ func (u *UserRepository) SaveUser(ctx context.Context, email, password string) (
 	return &stored, nil
 }
 
-func (u *UserRepository) GetUserByID(ctx context.Context, id types.ID) (*models.User, error) {
+func (u *UserRepository) GetUser(ctx context.Context, id int) (*models.User, error) {
 	var user models.User
 	err := u.QueryRowContext(ctx, query.GetUserByID, id).
 		Scan(&user.ID,
@@ -71,4 +70,14 @@ func (u *UserRepository) GetUserByEmail(ctx context.Context, login string) (*mod
 
 func (u *UserRepository) UpdateUser(ctx context.Context, user models.User) (*models.User, error) {
 	return nil, nil
+}
+
+func (u *UserRepository) DeleteUser(ctx context.Context, user models.User) (*models.User, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (u *UserRepository) SearchUser(ctx context.Context) ([]models.User, error) {
+	//TODO implement me
+	panic("implement me")
 }

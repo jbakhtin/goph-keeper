@@ -25,7 +25,7 @@ func NewAccessTokenAppService(cfg Config, lgr secondary_ports.Logger) (*AccessTo
 	}, nil
 }
 
-func (a *AccessTokenAppService) Create(userID types2.ID, sessionID types2.ID, duration time.Duration) (*types2.AccessToken, error) {
+func (a *AccessTokenAppService) Create(userID int, sessionID int, duration time.Duration) (*string, error) {
 	expireAt := time.Now().Add(duration)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, types2.JWTClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -42,7 +42,7 @@ func (a *AccessTokenAppService) Create(userID types2.ID, sessionID types2.ID, du
 		return nil, errors.Wrap(err, "sign auth jwt")
 	}
 
-	accessToken := types2.AccessToken(rawAccessToken)
+	accessToken := rawAccessToken
 
 	return &accessToken, nil
 }

@@ -5,7 +5,9 @@ import (
 	"database/sql"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/models"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/types"
+	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/primary"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	"github.com/jbakhtin/goph-keeper/internal/server/webserver/grpc/interceptors"
 	"time"
 
 	"github.com/jbakhtin/goph-keeper/internal/server/apperror"
@@ -23,13 +25,13 @@ type PasswordService interface {
 }
 
 type AccessTokenService interface {
-	Create(userID types.ID, sessionID types.ID, duration time.Duration) (*types.AccessToken, error)
+	Create(userID int, sessionID int, duration time.Duration) (*string, error)
 }
 
 type AuthUseCase struct {
-	cfg                Config
-	lgr                secondary_ports.Logger
-	passwordAppService PasswordService
+	cfg                   Config
+	lgr                   secondary_ports.Logger
+	passwordAppService    PasswordService
 	accessTokenAppService AccessTokenService
 	sessionRepository     secondary_ports.SessionRepository
 	userRepository        secondary_ports.UserRepository
@@ -67,7 +69,12 @@ func (us *AuthUseCase) RegisterUser(ctx context.Context, email, rawPassword stri
 		return nil, errors.Wrap(err, "hash password")
 	}
 
-	user, err = us.userRepository.SaveUser(ctx, email, hashedPassword) // ToDo: need to pass model
+	user = &models.User{
+		Email:    email,
+		Password: hashedPassword,
+	}
+
+	user, err = us.userRepository.SaveUser(ctx, *user) // ToDo: need to pass model
 	if err != nil {
 		return nil, errors.Wrap(err, "save new user")
 	}
@@ -75,7 +82,7 @@ func (us *AuthUseCase) RegisterUser(ctx context.Context, email, rawPassword stri
 	return user, nil
 }
 
-func (us *AuthUseCase) LoginUser(ctx context.Context, email string, password string, fingerPrint types.FingerPrint) (*types.TokensPair, error) {
+func (us *AuthUseCase) LoginUser(ctx context.Context, email string, password string, fingerPrint models.FingerPrint) (*types.TokensPair, error) {
 	user, err := us.userRepository.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, errors.Wrap(err, "get user by email")
@@ -87,7 +94,7 @@ func (us *AuthUseCase) LoginUser(ctx context.Context, email string, password str
 		return nil, errors.Wrap(err, "check password")
 	}
 
-	session, err := us.sessionRepository.SaveSession(ctx, *user.ID, fingerPrint, types.TimeStamp(time.Now().Add(us.cfg.GetSessionExpire())))
+	session, err := us.sessionRepository.SaveSession(ctx, *user.ID, fingerPrint, time.Now().Add(us.cfg.GetSessionExpire()))
 	if err != nil {
 		return nil, errors.Wrap(err, "create session") //ToDo: mistake
 	}
@@ -103,7 +110,7 @@ func (us *AuthUseCase) LoginUser(ctx context.Context, email string, password str
 	}, nil
 }
 
-func (us *AuthUseCase) RefreshToken(ctx context.Context, refreshToken types.RefreshToken) (*types.TokensPair, error) {
+func (us *AuthUseCase) RefreshToken(ctx context.Context, refreshToken string) (*types.TokensPair, error) {
 	session, err := us.sessionRepository.GetSessionByRefreshToken(ctx, refreshToken)
 	if err != nil {
 		return nil, errors.Wrap(err, "get session by refresh_token")
@@ -125,14 +132,14 @@ func (us *AuthUseCase) RefreshToken(ctx context.Context, refreshToken types.Refr
 	}, nil
 }
 
-func (us *AuthUseCase) Logout(ctx context.Context, logoutType types.LogoutType) (sessions []*models.Session, err error) {
-	var sessionID = ctx.Value(types.ContextKeySessionID)
-	var userID = ctx.Value(types.ContextKeyUserID)
+func (us *AuthUseCase) Logout(ctx context.Context, logOutType primary_ports.LogOutType) (sessions []*models.Session, err error) {
+	var sessionID = ctx.Value(interceptors.ContextKeySessionID)
+	var userID = ctx.Value(interceptors.ContextKeyUserID)
 
 	// ToDo: добавить проверку на истечение срока жизни сессии и то что сессия уже закрыта
-	switch logoutType {
-	case types.LogoutTypeThis:
-		session, err := us.sessionRepository.GetSessionByID(ctx, sessionID.(types.ID))
+	switch logOutType {
+	case primary_ports.LogoutTypeThis:
+		session, err := us.sessionRepository.GetSessionByID(ctx, sessionID.(int))
 		if err != nil {
 			return nil, errors.Wrap(err, "get session by session id")
 		}
@@ -142,8 +149,8 @@ func (us *AuthUseCase) Logout(ctx context.Context, logoutType types.LogoutType) 
 			return nil, errors.Wrap(err, "close current session by session_id")
 		}
 		sessions = append(sessions, session)
-	case types.LogoutTypeAll:
-		sessions, err = us.sessionRepository.GetSessionsByUserID(ctx, userID.(types.ID))
+	case primary_ports.LogoutTypeAll:
+		sessions, err = us.sessionRepository.GetSessionsByUserID(ctx, userID.(int))
 		if err != nil {
 			return nil, errors.Wrap(err, "get sessions by user_id")
 		}
@@ -156,6 +163,8 @@ func (us *AuthUseCase) Logout(ctx context.Context, logoutType types.LogoutType) 
 
 			sessions[index] = session
 		}
+	default:
+		return nil, errors.New("logout type error")
 	}
 
 	return sessions, nil

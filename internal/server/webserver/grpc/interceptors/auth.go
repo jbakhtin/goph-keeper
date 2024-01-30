@@ -12,6 +12,18 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+type contextKey string
+
+func (c contextKey) String() string {
+	return string(c)
+}
+
+// ToDo: need move to infrastructure
+var (
+	ContextKeyUserID    = contextKey("user_id")
+	ContextKeySessionID = contextKey("session_id")
+)
+
 type Config interface {
 	GetAppKey() string
 }
@@ -37,6 +49,7 @@ func (i *AuthInterceptor) Unary(ctx context.Context, req any, info *grpc.UnarySe
 	return handler(ctx, req)
 }
 
+// ToDo: разобраться как оформить код в мидлвеере
 func (i *AuthInterceptor) authorize(ctx context.Context, method string) (context.Context, error) {
 	if _, ok := i.accessibleRoles[method]; !ok {
 		return ctx, nil
@@ -65,8 +78,8 @@ func (i *AuthInterceptor) authorize(ctx context.Context, method string) (context
 		return nil, apperror.ErrNotAuthorized
 	}
 
-	ctx = context.WithValue(ctx, types.ContextKeyUserID, customClaims.Data.UserID)
-	ctx = context.WithValue(ctx, types.ContextKeySessionID, customClaims.Data.SessionID)
+	ctx = context.WithValue(ctx, ContextKeyUserID, customClaims.Data.UserID)
+	ctx = context.WithValue(ctx, ContextKeySessionID, customClaims.Data.SessionID)
 
 	return ctx, nil
 }

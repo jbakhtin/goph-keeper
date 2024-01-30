@@ -1,13 +1,13 @@
 package models
 
 import (
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/types"
+	"time"
 )
 
 type User struct {
-	ID        *types.ID
+	ID        *int
 	Email     string
 	Password  string
-	CreatedAt *types.TimeStamp
-	UpdatedAt *types.TimeStamp
+	CreatedAt *time.Time
+	UpdatedAt *time.Time
 }
