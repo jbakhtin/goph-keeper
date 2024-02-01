@@ -1,6 +1,8 @@
 package models
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"time"
 )
 
@@ -10,7 +12,7 @@ type Session struct {
 	ID           *int
 	UserID       int
 	RefreshToken string
-	FingerPrint FingerPrint
+	FingerPrint  FingerPrint
 	ExpireAt     time.Time
 	CreatedAt    *time.Time
 	ClosedAt     *time.Time
@@ -23,4 +25,13 @@ func (s *Session) IsExpired() bool {
 
 func (s *Session) IsClosed() bool {
 	return s.ClosedAt != nil
+}
+
+func (s *Session) Close() {
+	*s.ClosedAt = time.Now()
+}
+
+func (s *Session) UpdateRefreshToken() {
+	hash := md5.Sum([]byte(time.Now().String()))
+	s.RefreshToken = hex.EncodeToString(hash[:])
 }

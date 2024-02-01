@@ -40,6 +40,8 @@ const (
 		WHERE sessions.id = $1 AND sessions.closed_at is NULL LIMIT 1
 	`
 
+	SearchSessionsTemp = `SELECT id, user_id, refresh_token, finger_print, expire_at, created_at, closed_at, updated_at FROM sessions`
+
 	GetSessionByUserIDAndFingerPrint = `
 		SELECT id, user_id, refresh_token, finger_print, expire_at, created_at, closed_at, updated_at FROM sessions
 		WHERE sessions.user_id = $1 AND sessions.finger_print = $2 AND sessions.closed_at is NULL LIMIT 1

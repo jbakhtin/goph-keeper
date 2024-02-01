@@ -34,6 +34,7 @@ type AuthUseCase struct {
 	passwordAppService    PasswordService
 	accessTokenAppService AccessTokenService
 	sessionRepository     secondary_ports.SessionRepository
+	sessionSpecifications secondary_ports.SessionSpecifications
 	userRepository        secondary_ports.UserRepository
 }
 
@@ -116,7 +117,8 @@ func (us *AuthUseCase) RefreshToken(ctx context.Context, refreshToken string) (*
 		return nil, errors.Wrap(err, "get session by refresh_token")
 	}
 
-	session, err = us.sessionRepository.UpdateRefreshTokenByID(ctx, *session.ID)
+	session.UpdateRefreshToken()
+	session, err = us.sessionRepository.UpdateSession(ctx, *session)
 	if err != nil {
 		return nil, errors.Wrap(err, "update refresh token")
 	}
@@ -139,24 +141,31 @@ func (us *AuthUseCase) Logout(ctx context.Context, logOutType primary_ports.LogO
 	// ToDo: добавить проверку на истечение срока жизни сессии и то что сессия уже закрыта
 	switch logOutType {
 	case primary_ports.LogoutTypeThis:
-		session, err := us.sessionRepository.GetSessionByID(ctx, sessionID.(int))
+		session, err := us.sessionRepository.GetSession(ctx, sessionID.(int))
 		if err != nil {
 			return nil, errors.Wrap(err, "get session by session id")
 		}
 
-		session, err = us.sessionRepository.CloseSessionByID(ctx, *session.ID)
+		session.Close()
+		session, err = us.sessionRepository.UpdateSession(ctx, *session)
 		if err != nil {
 			return nil, errors.Wrap(err, "close current session by session_id")
 		}
 		sessions = append(sessions, session)
 	case primary_ports.LogoutTypeAll:
-		sessions, err = us.sessionRepository.GetSessionsByUserID(ctx, userID.(int))
+		sessions, err = us.sessionRepository.Search(ctx, us.sessionSpecifications.Where(
+			us.sessionSpecifications.And(
+				us.sessionSpecifications.UserID(userID.(int)),
+				us.sessionSpecifications.IsNotClosed(),
+			),
+		))
 		if err != nil {
 			return nil, errors.Wrap(err, "get sessions by user_id")
 		}
 
 		for index, session := range sessions {
-			session, err = us.sessionRepository.CloseSessionByID(ctx, *session.ID)
+			session.Close()
+			session, err = us.sessionRepository.UpdateSession(ctx, *session)
 			if err != nil {
 				return nil, errors.Wrap(err, "close all sessions by user_id")
 			}
