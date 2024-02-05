@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/models"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 	"github.com/jbakhtin/goph-keeper/internal/server/logger/zap"
@@ -16,14 +17,14 @@ type UserRepository struct {
 	lgr *zap.Logger
 }
 
-func NewUserRepository(lgr *zap.Logger, client *sql.DB) (*UserRepository, error) { // ToDo: need to remove mock client
+func NewUserRepository(lgr *zap.Logger, client *sql.DB) (*UserRepository, error) {
 	return &UserRepository{
 		DB:  client,
 		lgr: lgr,
 	}, nil
 }
 
-func (u *UserRepository) SaveUser(ctx context.Context, user models.User) (*models.User, error) {
+func (u *UserRepository) Create(ctx context.Context, user models.User) (*models.User, error) {
 	var stored models.User
 	err := u.QueryRowContext(ctx, query.CreateUser, user.Email, user.Password).
 		Scan(&stored.ID,
@@ -38,7 +39,7 @@ func (u *UserRepository) SaveUser(ctx context.Context, user models.User) (*model
 	return &stored, nil
 }
 
-func (u *UserRepository) GetUser(ctx context.Context, id int) (*models.User, error) {
+func (u *UserRepository) Get(ctx context.Context, id int) (*models.User, error) {
 	var user models.User
 	err := u.QueryRowContext(ctx, query.GetUserByID, id).
 		Scan(&user.ID,
@@ -53,31 +54,40 @@ func (u *UserRepository) GetUser(ctx context.Context, id int) (*models.User, err
 	return &user, nil
 }
 
-func (u *UserRepository) GetUserByEmail(ctx context.Context, login string) (*models.User, error) {
-	var user models.User
-	err := u.QueryRowContext(ctx, query.GetUserByEmail, login).
-		Scan(&user.ID,
+func (u *UserRepository) Update(ctx context.Context, user models.User) (*models.User, error) {
+	return nil, nil
+}
+
+func (u *UserRepository) Delete(ctx context.Context, user models.User) (*models.User, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (u *UserRepository) Search(ctx context.Context, specification secondary_ports.QuerySpecification) ([]*models.User, error) {
+	rows, err := u.QueryContext(ctx, fmt.Sprintf("%s %s", query.SearchUserTemp, specification.Query()))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	users := make([]*models.User, 0)
+	for rows.Next() {
+		var user models.User
+		err = rows.Scan(&user.ID,
 			&user.Email,
 			&user.Password,
 			&user.CreatedAt,
 			&user.UpdatedAt)
-	if err != nil {
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, &user)
+	}
+
+	if err = rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return &user, nil
-}
-
-func (u *UserRepository) UpdateUser(ctx context.Context, user models.User) (*models.User, error) {
-	return nil, nil
-}
-
-func (u *UserRepository) DeleteUser(ctx context.Context, user models.User) (*models.User, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (u *UserRepository) SearchUser(ctx context.Context) ([]models.User, error) {
-	//TODO implement me
-	panic("implement me")
+	return users, nil
 }

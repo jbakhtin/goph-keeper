@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type FingerPrint map[any]any
+type FingerPrint map[string]any
 
 type Session struct {
 	ID           *int
@@ -28,7 +28,8 @@ func (s *Session) IsClosed() bool {
 }
 
 func (s *Session) Close() {
-	*s.ClosedAt = time.Now()
+	now := time.Now()
+	s.ClosedAt = &now
 }
 
 func (s *Session) UpdateRefreshToken() {

@@ -23,8 +23,9 @@ func NewModule(
 	logger secondary_ports.Logger,
 	userRepository secondary_ports.UserRepository,
 	sessionRepository secondary_ports.SessionRepository,
-	) (*Module, error) {
-
+	sessionQuerySpecification secondary_ports.SessionQuerySpecification,
+	userQuerySpecification secondary_ports.UserQuerySpecification,
+) (*Module, error) {
 	passwordAppService, err := password.NewPasswordAppService(cfg, logger)
 	if err != nil {
 		return nil, err
@@ -35,7 +36,16 @@ func NewModule(
 		return nil, err
 	}
 
-	useCase, err := usecase.NewAuthUseCase(cfg, logger, passwordAppService, accessAppService, sessionRepository, userRepository)
+	useCase, err := usecase.NewAuthUseCase(
+		cfg,
+		logger,
+		passwordAppService,
+		accessAppService,
+		sessionRepository,
+		sessionQuerySpecification,
+		userQuerySpecification,
+		userRepository,
+	)
 
 	return &Module{
 		useCase: useCase,

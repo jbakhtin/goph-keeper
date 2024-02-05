@@ -11,6 +11,8 @@ import (
 	"github.com/jbakhtin/goph-keeper/internal/server/logger/zap"
 	"github.com/jbakhtin/goph-keeper/internal/server/storage/postgres"
 	"github.com/jbakhtin/goph-keeper/internal/server/storage/postgres/repositories"
+	"github.com/jbakhtin/goph-keeper/internal/server/storage/postgres/specifications/session"
+	"github.com/jbakhtin/goph-keeper/internal/server/storage/postgres/specifications/user"
 	"github.com/jbakhtin/goph-keeper/internal/server/webserver/grpc"
 	"github.com/jbakhtin/goph-keeper/internal/server/webserver/grpc/handlers"
 	"github.com/jbakhtin/goph-keeper/internal/server/webserver/grpc/interceptors"
@@ -22,12 +24,12 @@ import (
 
 var (
 	server *grpc.Server
-	clr *closer.Closer
-	lgr *zap.Logger
-	cfg *config.Config
+	clr    *closer.Closer
+	lgr    *zap.Logger
+	cfg    *config.Config
 )
 
-//accessibleRoles возвращает список GRPC обработчиков которые должны быть проверены на аутентификацию пользователя
+// accessibleRoles возвращает список GRPC обработчиков которые должны быть проверены на аутентификацию пользователя
 // NOTE список нужно обновлять при добавлении новых обработчиков, если требуется
 func accessibleRoles() map[string][]string {
 	const authService = "/v1.auth.AuthService/"
@@ -36,7 +38,7 @@ func accessibleRoles() map[string][]string {
 	return map[string][]string{
 		authService + "RefreshToken": {},
 		authService + "Logout":       {},
-		keyValueService + "Create":       {},
+		keyValueService + "Create":   {},
 	}
 }
 
@@ -74,10 +76,22 @@ func init() {
 		panic(err)
 	}
 
+	// Init query specifications
+
+	sessionQuerySpecification, err := session.NewSessionQuerySpecification()
+	if err != nil {
+		panic(err)
+	}
+
+	userQuerySpecification, err := user.NewUserQuerySpecification()
+	if err != nil {
+		panic(err)
+	}
+
 	// Init app modules
 	// NOTE The app modules are built on a hexagonal architecture
 
-	authModule, err := auth.NewModule(cfg, lgr, userRepository, sessionRepository)
+	authModule, err := auth.NewModule(cfg, lgr, userRepository, sessionRepository, sessionQuerySpecification, userQuerySpecification)
 	if err != nil {
 		panic(err)
 	}
@@ -94,7 +108,7 @@ func init() {
 		panic(err)
 	}
 
-	keyValueHandler, err := handlers.NewKeyValueHandler(lgr,  keyValueModule.GetUseCase())
+	keyValueHandler, err := handlers.NewKeyValueHandler(lgr, keyValueModule.GetUseCase())
 	if err != nil {
 		panic(err)
 	}
@@ -106,7 +120,7 @@ func init() {
 	}
 
 	// Init GRPC Server and connect handlers to it
-	if  server, err = grpc.NewServer(cfg, grpc.WithUnaryInterceptor(authInterceptor.Unary)); err != nil {
+	if server, err = grpc.NewServer(cfg, grpc.WithUnaryInterceptor(authInterceptor.Unary)); err != nil {
 		panic(err)
 	}
 

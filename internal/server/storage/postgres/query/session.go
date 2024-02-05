@@ -9,7 +9,7 @@ const (
 
 	UpdateSessionByID = `
 		UPDATE sessions
-		SET refresh_token = md5(random()::text), expire_at = $2, updated_at = NOW()
+		SET user_id = $2, refresh_token = md5(random()::text), finger_print = $3, expire_at = $4, closed_at = $5, updated_at = NOW()
 		WHERE sessions.id = $1
 		RETURNING id, user_id, refresh_token, finger_print, expire_at, created_at, closed_at, updated_at
 	`
