@@ -1,4 +1,4 @@
-package secondary_ports
+package ports
 
 type Logger interface {
 	Debug(msg string, fields ...any)

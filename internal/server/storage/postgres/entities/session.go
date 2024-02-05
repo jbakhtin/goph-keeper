@@ -23,13 +23,13 @@ func (m *FingerPrint) Scan(value interface{}) error {
 
 	bytes, ok := value.([]byte)
 	if !ok {
-		return fmt.Errorf("Expected []byte, received %T", value)
+		return fmt.Errorf("expected []byte, received %T", value)
 	}
 
 	// Декодируем срез байтов в map[string]interface{}
 	err := json.Unmarshal(bytes, &m)
 	if err != nil {
-		return fmt.Errorf("Error decoding JSON: %w", err)
+		return fmt.Errorf("error decoding JSON: %w", err)
 	}
 
 	return nil

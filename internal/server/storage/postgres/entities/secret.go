@@ -6,11 +6,11 @@ import (
 )
 
 type Secret struct {
-	ID uuid.UUID
-	UserID int
-	Type string
-	MetaData string
-	Data map[any]any
+	ID        uuid.UUID
+	UserID    int
+	Type      string
+	MetaData  string
+	Data      map[any]any
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

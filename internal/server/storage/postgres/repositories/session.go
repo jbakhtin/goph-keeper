@@ -11,7 +11,7 @@ import (
 	"github.com/jbakhtin/goph-keeper/internal/server/storage/postgres/query"
 )
 
-var _ secondary_ports.SessionRepository = &SessionRepository{}
+var _ ports.SessionRepository = &SessionRepository{}
 
 type SessionRepository struct {
 	*sql.DB
@@ -89,7 +89,7 @@ func (s *SessionRepository) Delete(ctx context.Context, session models.Session) 
 	panic("implement me")
 }
 
-func (s *SessionRepository) Search(ctx context.Context, specs secondary_ports.QuerySpecification) ([]*models.Session, error) {
+func (s *SessionRepository) Search(ctx context.Context, specs ports.QuerySpecification) ([]*models.Session, error) {
 	rows, err := s.QueryContext(ctx, fmt.Sprintf("%s %s", query.SearchSessionsTemp, specs.Query()))
 	if err != nil {
 		return nil, err

@@ -2,10 +2,10 @@ package session
 
 import (
 	"fmt"
-	secondary_ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 )
 
-var _ secondary_ports.QuerySpecification = &UserIDSpecification{}
+var _ ports.QuerySpecification = &UserIDSpecification{}
 
 type UserIDSpecification struct {
 	UserID int

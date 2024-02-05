@@ -96,7 +96,7 @@ func init() {
 		panic(err)
 	}
 
-	keyValueModule, err := key_value.NewModule(cfg, lgr, keyValueRepository)
+	keyValueModule, err := keyvalue.NewModule(cfg, lgr, keyValueRepository)
 	if err != nil {
 		panic(err)
 	}

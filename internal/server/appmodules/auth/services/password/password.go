@@ -13,10 +13,10 @@ type Config interface {
 
 type PasswordAppService struct {
 	cfg Config
-	lgr secondary_ports.Logger
+	lgr ports.Logger
 }
 
-func NewPasswordAppService(cfg Config, lgr secondary_ports.Logger) (*PasswordAppService, error) {
+func NewPasswordAppService(cfg Config, lgr ports.Logger) (*PasswordAppService, error) {
 	return &PasswordAppService{
 		cfg: cfg,
 		lgr: lgr,

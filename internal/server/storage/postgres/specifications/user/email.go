@@ -3,10 +3,10 @@ package user
 import (
 	"database/sql"
 	"fmt"
-	secondary_ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 )
 
-var _ secondary_ports.QuerySpecification = &EmailSpecification{}
+var _ ports.QuerySpecification = &EmailSpecification{}
 
 type EmailSpecification struct {
 	sql.DB

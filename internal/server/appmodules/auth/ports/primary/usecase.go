@@ -1,4 +1,4 @@
-package primary_ports
+package ports
 
 import (
 	"context"
@@ -22,4 +22,3 @@ type UseCase interface {
 	RefreshToken(ctx context.Context, refreshToken string) (*types.TokensPair, error)
 	Logout(ctx context.Context, logoutType LogOutType) (sessions []*models.Session, err error)
 }
-

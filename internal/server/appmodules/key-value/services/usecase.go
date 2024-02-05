@@ -7,13 +7,13 @@ import (
 )
 
 type KeyValueUseCase struct {
-	logger     secondary_ports.Logger
-	repository secondary_ports.KeyValueRepository
+	logger     ports.Logger
+	repository ports.KeyValueRepository
 }
 
-func NewKeyValueUseCase(logger secondary_ports.Logger, repository secondary_ports.KeyValueRepository) (*KeyValueUseCase, error) {
+func NewKeyValueUseCase(logger ports.Logger, repository ports.KeyValueRepository) (*KeyValueUseCase, error) {
 	return &KeyValueUseCase{
-		logger: logger,
+		logger:     logger,
 		repository: repository,
 	}, nil
 }

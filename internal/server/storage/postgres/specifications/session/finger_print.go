@@ -2,10 +2,10 @@ package session
 
 import (
 	"fmt"
-	secondary_ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 )
 
-var _ secondary_ports.QuerySpecification = &FingerPrintSpecification{}
+var _ ports.QuerySpecification = &FingerPrintSpecification{}
 
 type FingerPrintSpecification struct {
 	FingerPrint string

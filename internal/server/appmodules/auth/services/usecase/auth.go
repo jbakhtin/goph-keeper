@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/models"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/types"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/primary"
+	primaryports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/primary"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 	"github.com/jbakhtin/goph-keeper/internal/server/webserver/grpc/interceptors"
 	"time"
@@ -30,24 +30,24 @@ type AccessTokenService interface {
 
 type AuthUseCase struct {
 	cfg                       Config
-	lgr                       secondary_ports.Logger
+	lgr                       ports.Logger
 	passwordAppService        PasswordService
 	accessTokenAppService     AccessTokenService
-	sessionRepository         secondary_ports.SessionRepository
-	sessionQuerySpecification secondary_ports.SessionQuerySpecification
-	userQuerySpecification    secondary_ports.UserQuerySpecification
-	userRepository            secondary_ports.UserRepository
+	sessionRepository         ports.SessionRepository
+	sessionQuerySpecification ports.SessionQuerySpecification
+	userQuerySpecification    ports.UserQuerySpecification
+	userRepository            ports.UserRepository
 }
 
 func NewAuthUseCase(
 	cfg Config,
-	lgr secondary_ports.Logger,
+	lgr ports.Logger,
 	passwordAppService PasswordService,
 	accessTokenAppService AccessTokenService,
-	sessionRepository secondary_ports.SessionRepository,
-	sessionQuerySpecification secondary_ports.SessionQuerySpecification,
-	userQuerySpecification secondary_ports.UserQuerySpecification,
-	userRepository secondary_ports.UserRepository) (*AuthUseCase, error) {
+	sessionRepository ports.SessionRepository,
+	sessionQuerySpecification ports.SessionQuerySpecification,
+	userQuerySpecification ports.UserQuerySpecification,
+	userRepository ports.UserRepository) (*AuthUseCase, error) {
 	return &AuthUseCase{
 		cfg:                       cfg,
 		lgr:                       lgr,
@@ -160,13 +160,13 @@ func (us *AuthUseCase) RefreshToken(ctx context.Context, refreshToken string) (*
 	}, nil
 }
 
-func (us *AuthUseCase) Logout(ctx context.Context, logOutType primary_ports.LogOutType) (sessions []*models.Session, err error) {
+func (us *AuthUseCase) Logout(ctx context.Context, logOutType primaryports.LogOutType) (sessions []*models.Session, err error) {
 	var sessionID = ctx.Value(interceptors.ContextKeySessionID)
 	var userID = ctx.Value(interceptors.ContextKeyUserID)
 
 	// ToDo: добавить проверку на истечение срока жизни сессии и то что сессия уже закрыта
 	switch logOutType {
-	case primary_ports.LogoutTypeThis:
+	case primaryports.LogoutTypeThis:
 		session, err := us.sessionRepository.Get(ctx, sessionID.(int))
 		if err != nil {
 			return nil, errors.Wrap(err, "get session by session id")
@@ -178,7 +178,7 @@ func (us *AuthUseCase) Logout(ctx context.Context, logOutType primary_ports.LogO
 			return nil, errors.Wrap(err, "close current session by session_id")
 		}
 		sessions = append(sessions, session)
-	case primary_ports.LogoutTypeAll:
+	case primaryports.LogoutTypeAll:
 		sessions, err = us.sessionRepository.Search(ctx, us.sessionQuerySpecification.Where(
 			us.sessionQuerySpecification.And(
 				us.sessionQuerySpecification.UserID(userID.(int)),

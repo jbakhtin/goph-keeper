@@ -1,8 +1,8 @@
 package session
 
-import secondary_ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+import ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 
-var _ secondary_ports.QuerySpecification = &IsNotClosedSpecification{}
+var _ ports.QuerySpecification = &IsNotClosedSpecification{}
 
 type IsNotClosedSpecification struct{}
 

@@ -2,13 +2,13 @@ package basic
 
 import (
 	"fmt"
-	secondary_ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 )
 
-var _ secondary_ports.QuerySpecification = &WhereSpecification{}
+var _ ports.QuerySpecification = &WhereSpecification{}
 
 type LimitSpecification struct {
-	Specification secondary_ports.QuerySpecification
+	Specification ports.QuerySpecification
 	Limit         int
 }
 

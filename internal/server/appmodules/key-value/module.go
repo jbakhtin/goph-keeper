@@ -1,18 +1,18 @@
-package key_value
+package keyvalue
 
 import (
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/ports/primary"
+	primaryports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/ports/primary"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/ports/secondary"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/services"
 )
 
-type Config interface {}
+type Config interface{}
 
 type Module struct {
-	useCase primary_ports.UseCase
+	useCase primaryports.UseCase
 }
 
-func NewModule(cfg Config, logger secondary_ports.Logger, repository secondary_ports.KeyValueRepository) (*Module, error) {
+func NewModule(cfg Config, logger ports.Logger, repository ports.KeyValueRepository) (*Module, error) {
 	useCase, err := services.NewKeyValueUseCase(logger, repository)
 	if err != nil {
 		return nil, err
@@ -23,6 +23,6 @@ func NewModule(cfg Config, logger secondary_ports.Logger, repository secondary_p
 	}, nil
 }
 
-func (m *Module) GetUseCase() primary_ports.UseCase {
+func (m *Module) GetUseCase() primaryports.UseCase {
 	return m.useCase
 }

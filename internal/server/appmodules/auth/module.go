@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/primary"
+	primaryports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/primary"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/services/acesstoken"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/services/password"
@@ -9,7 +9,7 @@ import (
 )
 
 type Module struct {
-	useCase primary_ports.UseCase
+	useCase primaryports.UseCase
 }
 
 type Config interface {
@@ -20,11 +20,11 @@ type Config interface {
 
 func NewModule(
 	cfg Config,
-	logger secondary_ports.Logger,
-	userRepository secondary_ports.UserRepository,
-	sessionRepository secondary_ports.SessionRepository,
-	sessionQuerySpecification secondary_ports.SessionQuerySpecification,
-	userQuerySpecification secondary_ports.UserQuerySpecification,
+	logger ports.Logger,
+	userRepository ports.UserRepository,
+	sessionRepository ports.SessionRepository,
+	sessionQuerySpecification ports.SessionQuerySpecification,
+	userQuerySpecification ports.UserQuerySpecification,
 ) (*Module, error) {
 	passwordAppService, err := password.NewPasswordAppService(cfg, logger)
 	if err != nil {
@@ -46,12 +46,15 @@ func NewModule(
 		userQuerySpecification,
 		userRepository,
 	)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Module{
 		useCase: useCase,
 	}, nil
 }
 
-func (m *Module) GetUseCase() primary_ports.UseCase {
+func (m *Module) GetUseCase() primaryports.UseCase {
 	return m.useCase
 }

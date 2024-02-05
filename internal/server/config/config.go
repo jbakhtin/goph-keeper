@@ -153,4 +153,3 @@ func (c Config) GetGRPCServerAddress() string {
 func (c Config) GetGRPCServerNetwork() string {
 	return c.GRPCServer.Network
 }
-

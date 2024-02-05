@@ -2,14 +2,14 @@ package basic
 
 import (
 	"fmt"
-	secondary_ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 	"strings"
 )
 
-var _ secondary_ports.QuerySpecification = &WhereSpecification{}
+var _ ports.QuerySpecification = &WhereSpecification{}
 
 type OrSpecification struct {
-	Specifications []secondary_ports.QuerySpecification
+	Specifications []ports.QuerySpecification
 }
 
 func (s *OrSpecification) Query() string {

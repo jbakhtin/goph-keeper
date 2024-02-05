@@ -11,7 +11,7 @@ import (
 	"github.com/jbakhtin/goph-keeper/internal/server/storage/postgres/query"
 )
 
-var _ secondary_ports.KeyValueRepository = &KeyValueRepository{}
+var _ ports.KeyValueRepository = &KeyValueRepository{}
 
 type KeyValueRepository struct {
 	*sql.DB
@@ -20,7 +20,7 @@ type KeyValueRepository struct {
 
 func NewKeyValueRepository(lgr *zap.Logger, client *sql.DB) (*KeyValueRepository, error) {
 	return &KeyValueRepository{
-		DB: client,
+		DB:  client,
 		lgr: lgr,
 	}, nil
 }
@@ -28,13 +28,13 @@ func NewKeyValueRepository(lgr *zap.Logger, client *sql.DB) (*KeyValueRepository
 // ModelToEntity фабрика сущности базы данных
 func ModelToEntity(model models.KeyValue) (entities.Secret, error) {
 	return entities.Secret{
-		ID: model.ID,
+		ID:     model.ID,
 		UserID: model.UserID,
-		Type: "kv",
+		Type:   "kv",
 		Data: map[any]any{
 			"key": "test",
 		},
-		MetaData: model.Metadata,
+		MetaData:  model.Metadata,
 		CreatedAt: model.CreatedAt,
 		UpdatedAt: model.UpdatedAt,
 	}, nil
@@ -45,11 +45,11 @@ func ModelToEntity(model models.KeyValue) (entities.Secret, error) {
 // можно использовать внутренние фабрики (Но они не должны зависеть от внешних пакетов) и спецификации предписывающие правила создания модели
 func EntityToModel(entity entities.Secret) (models.KeyValue, error) {
 	return models.KeyValue{
-		ID: entity.ID,
-		UserID: entity.UserID,
-		Key: "key",
-		Value: "test",
-		Metadata: entity.MetaData,
+		ID:        entity.ID,
+		UserID:    entity.UserID,
+		Key:       "key",
+		Value:     "test",
+		Metadata:  entity.MetaData,
 		CreatedAt: entity.CreatedAt,
 		UpdatedAt: entity.UpdatedAt,
 	}, nil

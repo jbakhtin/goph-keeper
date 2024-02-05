@@ -55,7 +55,7 @@ func (s *Server) Start(ctx context.Context) (err error) {
 }
 
 func (s *Server) Shutdown(ctx context.Context) error {
-	s.GracefulStop() // ToDo: need to add context handle, if needed
+	s.GracefulStop()                      // ToDo: need to add context handle, if needed
 	fmt.Println("grpc server is stopped") // ToDo: need to add logger debug level
 	return nil
 }

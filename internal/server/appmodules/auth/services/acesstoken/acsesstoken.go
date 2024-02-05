@@ -15,10 +15,10 @@ type Config interface {
 
 type AccessTokenAppService struct {
 	cfg Config
-	lgr secondary_ports.Logger
+	lgr ports.Logger
 }
 
-func NewAccessTokenAppService(cfg Config, lgr secondary_ports.Logger) (*AccessTokenAppService, error) {
+func NewAccessTokenAppService(cfg Config, lgr ports.Logger) (*AccessTokenAppService, error) {
 	return &AccessTokenAppService{
 		cfg: cfg,
 		lgr: lgr,

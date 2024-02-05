@@ -208,7 +208,7 @@ func NewKeyValue(cmd *flag.FlagSet) error {
 	conn, err := grpc.Dial(":3200",
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithPerRPCCredentials(credentials.NewJWTCredentials()),
-		)
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -216,8 +216,8 @@ func NewKeyValue(cmd *flag.FlagSet) error {
 	client := kv.NewKeyValueServiceClient(conn)
 
 	pbRegisterRequest := &kv.CrateRequest{
-		Key:                "password",
-		Value:             "test",
+		Key:      "password",
+		Value:    "test",
 		Metadata: "my new test password",
 	}
 

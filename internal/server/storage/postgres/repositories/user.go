@@ -10,7 +10,7 @@ import (
 	"github.com/jbakhtin/goph-keeper/internal/server/storage/postgres/query"
 )
 
-var _ secondary_ports.UserRepository = &UserRepository{}
+var _ ports.UserRepository = &UserRepository{}
 
 type UserRepository struct {
 	*sql.DB
@@ -63,7 +63,7 @@ func (u *UserRepository) Delete(ctx context.Context, user models.User) (*models.
 	panic("implement me")
 }
 
-func (u *UserRepository) Search(ctx context.Context, specification secondary_ports.QuerySpecification) ([]*models.User, error) {
+func (u *UserRepository) Search(ctx context.Context, specification ports.QuerySpecification) ([]*models.User, error) {
 	rows, err := u.QueryContext(ctx, fmt.Sprintf("%s %s", query.SearchUserTemp, specification.Query()))
 	if err != nil {
 		return nil, err

@@ -1,4 +1,4 @@
-package secondary_ports
+package ports
 
 import (
 	"context"

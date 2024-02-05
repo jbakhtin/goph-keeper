@@ -1,4 +1,4 @@
-package primary_ports
+package ports
 
 import (
 	"context"

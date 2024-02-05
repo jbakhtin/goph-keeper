@@ -1,15 +1,14 @@
 package basic
 
 import (
-	"fmt"
-	secondary_ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 	"strings"
 )
 
-var _ secondary_ports.QuerySpecification = &WhereSpecification{}
+var _ ports.QuerySpecification = &WhereSpecification{}
 
 type AndSpecification struct {
-	Specifications []secondary_ports.QuerySpecification
+	Specifications []ports.QuerySpecification
 }
 
 func (s *AndSpecification) Query() string {
@@ -20,7 +19,7 @@ func (s *AndSpecification) Query() string {
 
 	query := strings.Join(queries, " AND ")
 
-	return fmt.Sprintf("%s", query)
+	return query
 }
 
 func (s *AndSpecification) Value() []any {

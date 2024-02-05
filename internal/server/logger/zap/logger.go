@@ -73,7 +73,7 @@ func NewLogger(cfg Config) (lgr *Logger, err error) {
 	return lgr, err
 }
 
-func  setUpLogLevel(cfg Config, levelName string, levelCond LevelEnablerFunc) (*teeOption, error) {
+func setUpLogLevel(cfg Config, levelName string, levelCond LevelEnablerFunc) (*teeOption, error) {
 	dir := fmt.Sprintf("%v%v/", cfg.GetLoggerFileDirectory(), levelName)
 	err := os.MkdirAll(dir, 0777)
 	if err != nil {
