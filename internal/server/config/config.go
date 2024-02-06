@@ -16,7 +16,7 @@ type Config struct {
 	AppKey          string        `env:"APP_KEY" envDefault:""`
 	ShutdownTimeout time.Duration `env:"SHUTDOWN_TIMEOUT" envDefault:"10s"`
 	GRPCServer      struct {
-		Address string `env:"GRPC_SERVER_ADDRESS" envDefault:"127.0.0.1:3200"`
+		Address string `env:"GRPC_SERVER_ADDRESS" envDefault:":3200"`
 		Network string `env:"GRPC_SERVER_NETWORK" envDefault:"tcp"`
 	}
 	DB struct {
