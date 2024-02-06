@@ -30,5 +30,8 @@ go.work
 # sandbox
 cmd/sandbox
 
+#bin
+bin/
+
 # logger
 storage/logs
