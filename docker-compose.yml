@@ -1,11 +1,12 @@
 services:
 
   database:
-    image: mock
+    image: postgres
     restart: always
     ports:
       - 5432:5432
     environment:
+      - HOST=host.docker.internal
       - POSTGRES_PASSWORD=12345
       - POSTGRES_USER=bakhtin
       - POSTGRES_DB=goph_keeper
@@ -15,3 +16,14 @@ services:
     restart: always
     ports:
       - 8080:8080
+
+  server:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    environment:
+      - DATABASE_DSN=postgres://bakhtin:12345@host.docker.internal:5432/goph_keeper
+      - DATABASE_DRIVER=pgx
+      - APP_ENV=development
+    ports:
+      - 3200:3200
