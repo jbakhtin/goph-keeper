@@ -67,7 +67,12 @@ func NewLogger(cfg Config) (lgr *Logger, err error) {
 		Logger: *zap.New(zapcore.NewTee(cores...)),
 	}
 	defer func() {
-		err = lgr.Sync()
+		syncError := lgr.Sync()
+
+		// ToDo: нужно разобратьяс в чем заключается различия sync под osx и linux
+		if cfg.GetAppEnv() != DevelopmentEnvironment {
+			err = syncError
+		}
 	}()
 
 	return lgr, err
