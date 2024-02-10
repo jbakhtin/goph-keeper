@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"fmt"
 	"net"
 
 	"github.com/pkg/errors"
@@ -55,7 +54,17 @@ func (s *Server) Start(ctx context.Context) (err error) {
 }
 
 func (s *Server) Shutdown(ctx context.Context) error {
-	s.GracefulStop()                      // ToDo: need to add context handle, if needed
-	fmt.Println("grpc server is stopped") // ToDo: need to add logger debug level
-	return nil
+	newCtx, finish := context.WithCancel(ctx)
+
+	go func() {
+		s.GracefulStop()
+		finish()
+	}()
+
+	select {
+	case <-newCtx.Done():
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
 }
