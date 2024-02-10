@@ -79,9 +79,14 @@ func Logout(cmd *flag.FlagSet, logoutType *int) error {
 		log.Fatal(err)
 	}
 
+	jwtCredentials, err := credentials.NewJWTCredentials()
+	if err != nil {
+		return err
+	}
+
 	conn, err := grpc.Dial(":3200",
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithPerRPCCredentials(credentials.NewJWTCredentials()),
+		grpc.WithPerRPCCredentials(jwtCredentials),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -205,9 +210,14 @@ func Registration(cmd *flag.FlagSet, email, password, passwordConfirmation *stri
 }
 
 func NewKeyValue(cmd *flag.FlagSet) error {
+	jwtCredentials, err := credentials.NewJWTCredentials()
+	if err != nil {
+		return err
+	}
+
 	conn, err := grpc.Dial(":3200",
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithPerRPCCredentials(credentials.NewJWTCredentials()),
+		grpc.WithPerRPCCredentials(jwtCredentials),
 	)
 	if err != nil {
 		log.Fatal(err)

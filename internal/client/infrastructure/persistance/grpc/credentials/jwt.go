@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"log"
 	"os"
 
 	"github.com/go-faster/errors"
@@ -13,31 +12,31 @@ import (
 )
 
 // GetJWTCredentials Функция для создания авторизационных данных на уровне вызовов RPC
-func NewJWTCredentials() credentials.PerRPCCredentials {
-	file, err := os.Open("./config.json")
+func NewJWTCredentials() (credentials.PerRPCCredentials, error) {
+	file, err := os.Open("./config.json") // ToDo: move to config
 	if err != nil {
-		log.Fatal(err)
+		return nil, errors.Wrap(err, "open file")
 	}
 
 	reader := bufio.NewReader(file)
 	if err != nil {
-		log.Fatal(errors.Wrap(err, "read file to buffer"))
+		return nil, errors.Wrap(err, "read file to buffer")
 	}
 
 	data, err := reader.ReadBytes('\n')
 	if err != nil && err != io.EOF {
-		log.Fatal(errors.Wrap(err, "read bytes to /n"))
+		return nil, errors.Wrap(err, "read bytes to /n")
 	}
 
 	var tokens map[string]string
 	err = json.Unmarshal(data, &tokens)
 	if err != nil {
-		log.Fatal(errors.Wrap(err, "unmarshal file to structure"))
+		return nil, errors.Wrap(err, "unmarshal file to structure")
 	}
 
 	return jwtCredentials{
 		Token: tokens["access_token"],
-	}
+	}, nil
 }
 
 // jwtCredentials Реализация интерфейса credentials.PerRPCCredentials для передачи токена авторизации в каждом вызове RPC
