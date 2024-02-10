@@ -54,7 +54,10 @@ func main() {
 			log.Fatal(err)
 		}
 	case "registration":
-		Registration(registrationCMD, registerEmail, registerPassword, registerPasswordConfirmation)
+		err := Registration(registrationCMD, registerEmail, registerPassword, registerPasswordConfirmation)
+		if err != nil {
+			log.Fatal(err)
+		}
 	case "refreshtoken":
 		err := RefreshToken(refreshTokenCMD)
 		if err != nil {
@@ -77,7 +80,7 @@ func main() {
 
 func Logout(cmd *flag.FlagSet, logoutType *int) error {
 	if err := cmd.Parse(os.Args[2:]); err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	jwtCredentials, err := credentials.NewJWTCredentials()
@@ -90,7 +93,7 @@ func Logout(cmd *flag.FlagSet, logoutType *int) error {
 		grpc.WithPerRPCCredentials(jwtCredentials),
 	)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	client := auth.NewAuthServiceClient(conn)
@@ -99,26 +102,22 @@ func Logout(cmd *flag.FlagSet, logoutType *int) error {
 		Type: auth.LogoutType(*logoutType),
 	}
 
-	response, err := client.Logout(context.TODO(), pbLogoutRequest)
+	_, err = client.Logout(context.TODO(), pbLogoutRequest)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-
-	fmt.Println(response.Type)
-	fmt.Println(response.Sessions)
 
 	return nil
 }
 
 func Login(cmd *flag.FlagSet, login, password *string) error {
 	if err := cmd.Parse(os.Args[2:]); err != nil {
-		log.Fatal(err)
+		return errors.Wrap(err, "parse command params")
 	}
 
-	conn, err := grpc.Dial(":3200",
-		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial(":3200", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatal(err)
+		return errors.Wrap(err, "open grpc connection")
 	}
 
 	client := auth.NewAuthServiceClient(conn)
@@ -130,7 +129,7 @@ func Login(cmd *flag.FlagSet, login, password *string) error {
 
 	response, err := client.Login(context.TODO(), pbLoginRequest)
 	if err != nil {
-		log.Fatal(err)
+		return errors.Wrap(err, "grpc request")
 	}
 
 	file, err := openFile("./config.json", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
@@ -187,14 +186,14 @@ func RefreshToken(cmd *flag.FlagSet) error {
 	return nil
 }
 
-func Registration(cmd *flag.FlagSet, email, password, passwordConfirmation *string) {
+func Registration(cmd *flag.FlagSet, email, password, passwordConfirmation *string) error {
 	if err := cmd.Parse(os.Args[2:]); err != nil {
-		return
+		return err
 	}
 
 	conn, err := grpc.Dial(":3200", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	client := auth.NewAuthServiceClient(conn)
@@ -205,12 +204,12 @@ func Registration(cmd *flag.FlagSet, email, password, passwordConfirmation *stri
 		PasswordConfirmation: *passwordConfirmation,
 	}
 
-	response, err := client.Register(context.TODO(), pbRegisterRequest)
+	_, err = client.Register(context.TODO(), pbRegisterRequest)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	fmt.Println(response, err)
+	return nil
 }
 
 func NewKeyValue(cmd *flag.FlagSet) error {
@@ -224,7 +223,7 @@ func NewKeyValue(cmd *flag.FlagSet) error {
 		grpc.WithPerRPCCredentials(jwtCredentials),
 	)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	client := kv.NewKeyValueServiceClient(conn)
@@ -235,12 +234,10 @@ func NewKeyValue(cmd *flag.FlagSet) error {
 		Metadata: "my new test password",
 	}
 
-	response, err := client.Create(context.TODO(), pbRegisterRequest)
+	_, err = client.Create(context.TODO(), pbRegisterRequest)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-
-	fmt.Println(response, err)
 
 	return nil
 }
@@ -266,7 +263,7 @@ func openFile(path string, flag int, perm os.FileMode) (*os.File, error) {
 }
 
 func Write(data any) (err error) {
-	file, err := openFile("./config.json", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	file, err := openFile("./config.json", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644) // ToDo: move config.json into [ports/adapters]
 	if err != nil {
 		return errors.Wrap(err, "open file")
 	}
@@ -283,5 +280,5 @@ func Write(data any) (err error) {
 		return errors.Wrap(err, "write to buffer")
 	}
 
-	return nil
+	return err
 }
