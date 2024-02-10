@@ -6,7 +6,7 @@ CREATE TABLE sessions (
     refresh_token text,
     finger_print jsonb,
     expire_at timestamp NOT NULL,
-    created_at timestamp NOT NULL,
+    created_at timestamp NOT NULL DEFAULT now(),
     closed_at timestamp,
     updated_at timestamp
 );
