@@ -19,9 +19,6 @@ func NewJWTCredentials() (credentials.PerRPCCredentials, error) {
 	}
 
 	reader := bufio.NewReader(file)
-	if err != nil {
-		return nil, errors.Wrap(err, "read file to buffer")
-	}
 
 	data, err := reader.ReadBytes('\n')
 	if err != nil && err != io.EOF {
