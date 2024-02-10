@@ -2,35 +2,35 @@ package query
 
 const (
 	CreateSession = `
-		INSERT INTO sessions (user_id, refresh_token, finger_print, expire_at, created_at)
-		VALUES($1, md5(random()::text), $2, $3, NOW())
+		INSERT INTO sessions (user_id, refresh_token, finger_print, expire_at)
+		VALUES($1, md5(random()::text), $2, $3)
 		RETURNING id, user_id, refresh_token, finger_print, expire_at, created_at, closed_at, updated_at
 	`
 
 	UpdateSessionByID = `
 		UPDATE sessions
-		SET user_id = $2, refresh_token = md5(random()::text), finger_print = $3, expire_at = $4, closed_at = $5, updated_at = NOW()
+		SET user_id = $2, refresh_token = md5(random()::text), finger_print = $3, expire_at = $4, closed_at = $5
 		WHERE sessions.id = $1
 		RETURNING id, user_id, refresh_token, finger_print, expire_at, created_at, closed_at, updated_at
 	`
 
 	CloseSessionByID = `
 		UPDATE sessions
-		SET closed_at = NOW(), updated_at = NOW()
+		SET closed_at = NOW()
 		WHERE sessions.id = $1
 		RETURNING id, user_id, refresh_token, finger_print, expire_at, created_at, closed_at, updated_at
 	`
 
 	CloseSessionsByUserID = `
 		UPDATE sessions
-		SET closed_at = NOW(), updated_at = NOW()
+		SET closed_at = NOW()
 		WHERE sessions.user_id = $1
 		RETURNING id, user_id, refresh_token, finger_print, expire_at, created_at, closed_at, updated_at
 	`
 
 	UpdateSessionRefreshTokenByID = `
 		UPDATE sessions
-		SET updated_at = NOW(), refresh_token = md5(random()::text)
+		SET refresh_token = md5(random()::text)
 		WHERE sessions.id = $1
 		RETURNING id, user_id, refresh_token, finger_print, expire_at, created_at, closed_at, updated_at
 	`

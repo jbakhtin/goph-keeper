@@ -2,14 +2,14 @@ package query
 
 const (
 	CreateUser = `
-		INSERT INTO users (email, password, created_at)
-		VALUES($1, $2, NOW())
+		INSERT INTO users (email, password)
+		VALUES($1, $2)
 		RETURNING id, email, password, created_at, updated_at
 	`
 
 	UpdateUser = `
-		INSERT INTO users (email, password, updated_at)
-		VALUES($1, $2, NOW())
+		INSERT INTO users (email, password)
+		VALUES($1, $2)
 		RETURNING id, email, password, created_at, updated_at
 	`
 

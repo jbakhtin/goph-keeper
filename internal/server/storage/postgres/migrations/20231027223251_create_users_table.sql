@@ -5,8 +5,13 @@ CREATE TABLE users (
    email text NOT NULL UNIQUE,
    password text NOT NULL,
    created_at timestamp NOT NULL DEFAULT now(),
-   updated_at timestamp
+   updated_at timestamp NOT NULL DEFAULT now()
 );
+
+CREATE TRIGGER set_timestamp_trigger_users
+BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION trigger_set_timestamp();
 -- +goose StatementEnd
 
 -- +goose Down
