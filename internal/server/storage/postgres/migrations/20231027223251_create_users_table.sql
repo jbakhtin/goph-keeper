@@ -4,7 +4,7 @@ CREATE TABLE users (
    id bigserial NOT NULL PRIMARY KEY,
    email text NOT NULL UNIQUE,
    password text NOT NULL,
-   created_at timestamp NOT NULL,
+   created_at timestamp NOT NULL DEFAULT now(),
    updated_at timestamp
 );
 -- +goose StatementEnd
