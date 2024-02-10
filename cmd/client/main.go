@@ -9,7 +9,7 @@ import (
 	"log"
 	"os"
 
-	auth2 "github.com/jbakhtin/goph-keeper/gen/go/v1/auth"
+	"github.com/jbakhtin/goph-keeper/gen/go/v1/auth"
 	"github.com/jbakhtin/goph-keeper/gen/go/v1/kv"
 
 	"github.com/go-faster/errors"
@@ -93,10 +93,10 @@ func Logout(cmd *flag.FlagSet, logoutType *int) error {
 		log.Fatal(err)
 	}
 
-	client := auth2.NewAuthServiceClient(conn)
+	client := auth.NewAuthServiceClient(conn)
 
-	pbLogoutRequest := &auth2.LogoutRequest{
-		Type: auth2.LogoutType(*logoutType),
+	pbLogoutRequest := &auth.LogoutRequest{
+		Type: auth.LogoutType(*logoutType),
 	}
 
 	response, err := client.Logout(context.TODO(), pbLogoutRequest)
@@ -121,9 +121,9 @@ func Login(cmd *flag.FlagSet, login, password *string) error {
 		log.Fatal(err)
 	}
 
-	client := auth2.NewAuthServiceClient(conn)
+	client := auth.NewAuthServiceClient(conn)
 
-	pbLoginRequest := &auth2.LoginRequest{
+	pbLoginRequest := &auth.LoginRequest{
 		Email:    *login,
 		Password: *password,
 	}
@@ -160,25 +160,28 @@ func Login(cmd *flag.FlagSet, login, password *string) error {
 }
 
 func RefreshToken(cmd *flag.FlagSet) error {
+	refreshTokenCredentials, err := credentials.NewRefreshTokenCredentials()
+	if err != nil {
+		return err
+	}
+
 	conn, err := grpc.Dial(":3200",
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithPerRPCCredentials(credentials.NewRefreshTokenCredentials()),
+		grpc.WithPerRPCCredentials(refreshTokenCredentials),
 	)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	client := auth2.NewAuthServiceClient(conn)
+	client := auth.NewAuthServiceClient(conn)
 	response, err := client.RefreshAccessToken(context.TODO(), &emptypb.Empty{})
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-
-	fmt.Println(response)
 
 	err = Write(response)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	return nil
@@ -186,7 +189,7 @@ func RefreshToken(cmd *flag.FlagSet) error {
 
 func Registration(cmd *flag.FlagSet, email, password, passwordConfirmation *string) {
 	if err := cmd.Parse(os.Args[2:]); err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	conn, err := grpc.Dial(":3200", grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -194,9 +197,9 @@ func Registration(cmd *flag.FlagSet, email, password, passwordConfirmation *stri
 		log.Fatal(err)
 	}
 
-	client := auth2.NewAuthServiceClient(conn)
+	client := auth.NewAuthServiceClient(conn)
 
-	pbRegisterRequest := &auth2.RegisterRequest{
+	pbRegisterRequest := &auth.RegisterRequest{
 		Email:                *email,
 		Password:             *password,
 		PasswordConfirmation: *passwordConfirmation,

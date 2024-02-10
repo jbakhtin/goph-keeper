@@ -29,9 +29,15 @@ func Read() (*TokensPair, error) {
 	return &tokens, nil
 }
 
-func NewRefreshTokenCredentials() credentials.PerRPCCredentials {
-	tokens, _ := Read()
-	return refreshToken{tokens.RefreshToken}
+func NewRefreshTokenCredentials() (credentials.PerRPCCredentials, error) {
+	tokens, err := Read()
+	if err != nil {
+		return nil, err
+	}
+
+	return refreshToken{
+		Token: tokens.RefreshToken,
+	}, nil
 }
 
 type refreshToken struct {
