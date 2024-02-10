@@ -1,9 +1,10 @@
 package acesstoken
 
 import (
-	types2 "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/types"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 	"time"
+
+	types2 "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/types"
+	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 
 	"github.com/go-faster/errors"
 	"github.com/golang-jwt/jwt/v5"

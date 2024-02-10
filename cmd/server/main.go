@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
+	"os/signal"
+	"syscall"
+
 	auth2 "github.com/jbakhtin/goph-keeper/gen/go/v1/auth"
 	"github.com/jbakhtin/goph-keeper/gen/go/v1/kv"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value"
+	keyvalue "github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value"
 	"github.com/jbakhtin/goph-keeper/internal/server/config"
 	"github.com/jbakhtin/goph-keeper/internal/server/config/drivers"
 	"github.com/jbakhtin/goph-keeper/internal/server/logger/zap"
@@ -16,8 +19,6 @@ import (
 	"github.com/jbakhtin/goph-keeper/internal/server/webserver/grpc"
 	"github.com/jbakhtin/goph-keeper/internal/server/webserver/grpc/handlers"
 	"github.com/jbakhtin/goph-keeper/internal/server/webserver/grpc/interceptors"
-	"os/signal"
-	"syscall"
 
 	"github.com/jbakhtin/rtagent/pkg/closer"
 )

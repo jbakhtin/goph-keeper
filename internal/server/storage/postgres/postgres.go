@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"embed"
+
 	"github.com/pkg/errors"
 
 	"github.com/pressly/goose/v3"

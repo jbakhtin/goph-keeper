@@ -2,8 +2,9 @@ package basic
 
 import (
 	"fmt"
-	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 	"strings"
+
+	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 )
 
 var _ ports.QuerySpecification = &WhereSpecification{}

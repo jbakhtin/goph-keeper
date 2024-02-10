@@ -2,8 +2,9 @@ package interceptors
 
 import (
 	"context"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/types"
 	"strings"
+
+	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/types"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jbakhtin/goph-keeper/internal/server/apperror"

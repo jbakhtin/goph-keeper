@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/models"
 	"time"
+
+	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/models"
 )
 
 var _ sql.Scanner = &FingerPrint{}

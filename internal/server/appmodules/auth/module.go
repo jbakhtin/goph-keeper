@@ -2,7 +2,7 @@ package auth
 
 import (
 	primaryports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/primary"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/services/acesstoken"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/services/password"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/services/usecase"

@@ -3,6 +3,7 @@ package user
 import (
 	"database/sql"
 	"fmt"
+
 	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 )
 

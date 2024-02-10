@@ -2,8 +2,9 @@ package drivers
 
 import (
 	"flag"
-	"github.com/jbakhtin/goph-keeper/internal/server/config"
 	"time"
+
+	"github.com/jbakhtin/goph-keeper/internal/server/config"
 )
 
 const (

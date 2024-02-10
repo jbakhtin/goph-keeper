@@ -3,12 +3,13 @@ package usecase
 import (
 	"context"
 	"database/sql"
+	"time"
+
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/models"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/types"
 	primaryports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/primary"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 	"github.com/jbakhtin/goph-keeper/internal/server/webserver/grpc/interceptors"
-	"time"
 
 	"github.com/jbakhtin/goph-keeper/internal/server/apperror"
 	"github.com/pkg/errors"

@@ -4,8 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/models"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 	"github.com/jbakhtin/goph-keeper/internal/server/logger/zap"
 	"github.com/jbakhtin/goph-keeper/internal/server/storage/postgres/query"
 )

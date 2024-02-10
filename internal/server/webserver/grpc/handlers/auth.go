@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+
 	"github.com/bufbuild/protovalidate-go"
 	"github.com/go-faster/errors"
 	"github.com/jbakhtin/goph-keeper/gen/go/v1/auth"

@@ -6,10 +6,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	auth2 "github.com/jbakhtin/goph-keeper/gen/go/v1/auth"
-	"github.com/jbakhtin/goph-keeper/gen/go/v1/kv"
 	"log"
 	"os"
+
+	auth2 "github.com/jbakhtin/goph-keeper/gen/go/v1/auth"
+	"github.com/jbakhtin/goph-keeper/gen/go/v1/kv"
 
 	"github.com/go-faster/errors"
 	"github.com/jbakhtin/goph-keeper/internal/client/infrastructure/persistance/grpc/credentials"

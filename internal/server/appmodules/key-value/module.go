@@ -2,7 +2,7 @@ package keyvalue
 
 import (
 	primaryports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/ports/primary"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/ports/secondary"
+	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/ports/secondary"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/services"
 )
 

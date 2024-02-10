@@ -4,7 +4,8 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"fmt"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+
+	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 )
 
 type Config interface {
