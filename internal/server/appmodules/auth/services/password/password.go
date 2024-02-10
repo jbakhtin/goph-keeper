@@ -12,24 +12,24 @@ type Config interface {
 	GetAppKey() string
 }
 
-type PasswordAppService struct {
+type Service struct {
 	cfg Config
 	lgr ports.Logger
 }
 
-func NewPasswordAppService(cfg Config, lgr ports.Logger) (*PasswordAppService, error) {
-	return &PasswordAppService{
+func New(cfg Config, lgr ports.Logger) (*Service, error) {
+	return &Service{
 		cfg: cfg,
 		lgr: lgr,
 	}, nil
 }
 
 // HashPassword преобразовать незащищенный пароль пользователя в хэш
-func (p *PasswordAppService) HashPassword(password string) (string, error) {
+func (p *Service) HashPassword(password string) (string, error) {
 	return p.hashPassword(password)
 }
 
-func (p *PasswordAppService) CheckPassword(password, need string) (bool, error) {
+func (p *Service) CheckPassword(password, need string) (bool, error) {
 	hashedPassword, err := p.hashPassword(password)
 	if err != nil {
 		return false, err
@@ -38,7 +38,7 @@ func (p *PasswordAppService) CheckPassword(password, need string) (bool, error) 
 	return hashedPassword == need, nil
 }
 
-func (p *PasswordAppService) hashPassword(password string) (string, error) {
+func (p *Service) hashPassword(password string) (string, error) {
 	h := hmac.New(sha256.New, []byte(p.cfg.GetAppKey()))
 	h.Write([]byte(password))
 	dst := h.Sum(nil)

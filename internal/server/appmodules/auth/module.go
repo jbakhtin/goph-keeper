@@ -3,7 +3,7 @@ package auth
 import (
 	primaryports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/primary"
 	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/services/acesstoken"
+	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/services/accesstoken"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/services/password"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/services/usecase"
 )
@@ -13,7 +13,7 @@ type Module struct {
 }
 
 type Config interface {
-	acesstoken.Config
+	accesstoken.Config
 	password.Config
 	usecase.Config
 }
@@ -26,17 +26,17 @@ func NewModule(
 	sessionQuerySpecification ports.SessionQuerySpecification,
 	userQuerySpecification ports.UserQuerySpecification,
 ) (*Module, error) {
-	passwordAppService, err := password.NewPasswordAppService(cfg, logger)
+	passwordAppService, err := password.New(cfg, logger)
 	if err != nil {
 		return nil, err
 	}
 
-	accessAppService, err := acesstoken.NewAccessTokenAppService(cfg, logger)
+	accessAppService, err := accesstoken.New(cfg, logger)
 	if err != nil {
 		return nil, err
 	}
 
-	useCase, err := usecase.NewAuthUseCase(
+	useCase, err := usecase.New(
 		cfg,
 		logger,
 		passwordAppService,

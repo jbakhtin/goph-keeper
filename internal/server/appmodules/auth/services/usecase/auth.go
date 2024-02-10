@@ -29,7 +29,7 @@ type AccessTokenService interface {
 	Create(userID int, sessionID int, duration time.Duration) (*string, error)
 }
 
-type AuthUseCase struct {
+type Service struct {
 	cfg                       Config
 	lgr                       ports.Logger
 	passwordAppService        PasswordService
@@ -40,7 +40,7 @@ type AuthUseCase struct {
 	userRepository            ports.UserRepository
 }
 
-func NewAuthUseCase(
+func New(
 	cfg Config,
 	lgr ports.Logger,
 	passwordAppService PasswordService,
@@ -48,8 +48,8 @@ func NewAuthUseCase(
 	sessionRepository ports.SessionRepository,
 	sessionQuerySpecification ports.SessionQuerySpecification,
 	userQuerySpecification ports.UserQuerySpecification,
-	userRepository ports.UserRepository) (*AuthUseCase, error) {
-	return &AuthUseCase{
+	userRepository ports.UserRepository) (*Service, error) {
+	return &Service{
 		cfg:                       cfg,
 		lgr:                       lgr,
 		passwordAppService:        passwordAppService,
@@ -61,7 +61,7 @@ func NewAuthUseCase(
 	}, nil
 }
 
-func (us *AuthUseCase) RegisterUser(ctx context.Context, email, rawPassword string) (*models.User, error) {
+func (us *Service) RegisterUser(ctx context.Context, email, rawPassword string) (*models.User, error) {
 	users, err := us.userRepository.Search(ctx, us.userQuerySpecification.Limit(
 		us.userQuerySpecification.Where(
 			us.userQuerySpecification.Email(email),
@@ -94,7 +94,7 @@ func (us *AuthUseCase) RegisterUser(ctx context.Context, email, rawPassword stri
 	return user, nil
 }
 
-func (us *AuthUseCase) LoginUser(ctx context.Context, email string, password string, fingerPrint models.FingerPrint) (*types.TokensPair, error) {
+func (us *Service) LoginUser(ctx context.Context, email string, password string, fingerPrint models.FingerPrint) (*types.TokensPair, error) {
 	users, err := us.userRepository.Search(ctx, us.userQuerySpecification.Limit(
 		us.userQuerySpecification.Where(
 			us.userQuerySpecification.Email(email),
@@ -132,7 +132,7 @@ func (us *AuthUseCase) LoginUser(ctx context.Context, email string, password str
 	}, nil
 }
 
-func (us *AuthUseCase) RefreshToken(ctx context.Context, refreshToken string) (*types.TokensPair, error) {
+func (us *Service) RefreshToken(ctx context.Context, refreshToken string) (*types.TokensPair, error) {
 	sessions, err := us.sessionRepository.Search(ctx, us.sessionQuerySpecification.Limit(
 		us.sessionQuerySpecification.Where(
 			us.sessionQuerySpecification.RefreshToken(refreshToken),
@@ -161,7 +161,7 @@ func (us *AuthUseCase) RefreshToken(ctx context.Context, refreshToken string) (*
 	}, nil
 }
 
-func (us *AuthUseCase) Logout(ctx context.Context, logOutType primaryports.LogOutType) (sessions []*models.Session, err error) {
+func (us *Service) Logout(ctx context.Context, logOutType primaryports.LogOutType) (sessions []*models.Session, err error) {
 	var sessionID = ctx.Value(interceptors.ContextKeySessionID)
 	var userID = ctx.Value(interceptors.ContextKeyUserID)
 

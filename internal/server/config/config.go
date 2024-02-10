@@ -3,12 +3,12 @@ package config
 import (
 	"time"
 
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/services/acesstoken"
+	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/services/accesstoken"
 	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/services/password"
 	"github.com/jbakhtin/goph-keeper/internal/server/logger/zap"
 )
 
-var _ acesstoken.Config = Config{}
+var _ accesstoken.Config = Config{}
 var _ password.Config = Config{}
 var _ zap.Config = Config{}
 
