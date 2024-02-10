@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"os/signal"
 	"syscall"
 
@@ -47,16 +49,18 @@ func init() {
 	var err error
 
 	if cfg, err = drivers.NewConfigFormENV(); err != nil {
-		panic(err)
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
 
 	if lgr, err = zap.NewLogger(cfg); err != nil {
-		panic(err)
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
 
 	sqlClient, err := postgres.NewSQLClient(cfg)
 	if err != nil {
-		panic(err)
+		lgr.Fatal(err.Error())
 	}
 
 	// Init repositories
@@ -64,29 +68,29 @@ func init() {
 
 	userRepository, err := repositories.NewUserRepository(lgr, sqlClient)
 	if err != nil {
-		panic(err)
+		lgr.Fatal(err.Error())
 	}
 
 	sessionRepository, err := repositories.NewSessionRepository(lgr, sqlClient)
 	if err != nil {
-		panic(err)
+		lgr.Fatal(err.Error())
 	}
 
 	keyValueRepository, err := repositories.NewKeyValueRepository(lgr, sqlClient)
 	if err != nil {
-		panic(err)
+		lgr.Fatal(err.Error())
 	}
 
 	// Init query specifications
 
 	sessionQuerySpecification, err := session.NewSessionQuerySpecification()
 	if err != nil {
-		panic(err)
+		lgr.Fatal(err.Error())
 	}
 
 	userQuerySpecification, err := user.NewUserQuerySpecification()
 	if err != nil {
-		panic(err)
+		lgr.Fatal(err.Error())
 	}
 
 	// Init app modules
@@ -94,35 +98,35 @@ func init() {
 
 	authModule, err := auth.NewModule(cfg, lgr, userRepository, sessionRepository, sessionQuerySpecification, userQuerySpecification)
 	if err != nil {
-		panic(err)
+		lgr.Fatal(err.Error())
 	}
 
 	keyValueModule, err := keyvalue.NewModule(cfg, lgr, keyValueRepository)
 	if err != nil {
-		panic(err)
+		lgr.Fatal(err.Error())
 	}
 
 	// GRPC Handlers
 
 	authHandler, err := handlers.NewAuthHandler(lgr, authModule.GetUseCase())
 	if err != nil {
-		panic(err)
+		lgr.Fatal(err.Error())
 	}
 
 	keyValueHandler, err := handlers.NewKeyValueHandler(lgr, keyValueModule.GetUseCase())
 	if err != nil {
-		panic(err)
+		lgr.Fatal(err.Error())
 	}
 
 	// GRPC Interceptors
 	authInterceptor, err := interceptors.NewAuthInterceptor(cfg, accessibleRoles())
 	if err != nil {
-		panic(err)
+		lgr.Fatal(err.Error())
 	}
 
 	// Init GRPC Server and connect handlers to it
 	if server, err = grpc.NewServer(cfg, grpc.WithUnaryInterceptor(authInterceptor.Unary)); err != nil {
-		panic(err)
+		lgr.Fatal(err.Error())
 	}
 
 	auth2.RegisterAuthServiceServer(server, authHandler) // ToDo: need to move to another place
@@ -130,7 +134,7 @@ func init() {
 
 	// Init closer
 	if clr, err = closer.New().WithFuncs(server.Shutdown).Build(); err != nil {
-		panic(err)
+		lgr.Fatal(err.Error())
 	}
 }
 
@@ -139,7 +143,7 @@ func main() {
 	defer cancel()
 
 	if err := server.Start(osCtx); err != nil {
-		lgr.Error(err.Error())
+		lgr.Fatal(err.Error())
 	}
 
 	lgr.Info("server started", &server) // ToDo: display logs with Debug level
