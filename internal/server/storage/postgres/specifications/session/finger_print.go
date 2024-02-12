@@ -2,6 +2,7 @@ package session
 
 import (
 	"fmt"
+
 	"github.com/feiin/sqlstring"
 
 	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
