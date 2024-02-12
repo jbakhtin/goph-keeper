@@ -30,7 +30,7 @@
 - *схема БД должна быть описана с помощью механизма миграций;
 - *добавить CodeCov Report в `PR`;
 - *В CI должен быть добавлен линтер https://github.com/golangci/golangci-lint;
-- *Нужно валидировать входные параметры в запросах. Если используются proto файлы, то с помощью https://github.com/bufbuild/protovalidate-go;
+- *Нужно проверять входные параметры в запросах. Если используются proto файлы, то с помощью https://github.com/bufbuild/protovalidate-go;
 - *Добавить docker-compose для сервиса.
 
 ### Типы хранимой информации

@@ -4,6 +4,6 @@
 Для генерации файлов используется пакет [pressly/goose](https://github.com/pressly/goose)
 
 Краткая инструкция:
-1. Из корневой дирректории вызовите команду генерации файла:
-   goose -dir=internal/server/infastructure/database/postgres/migrations create НАЗВАНИЕ_МИГРАЦИИ sql
+1. Из корневой директории вызовите команду генерации файла:
+   goose -dir=internal/server/database/postgres/migrations create НАЗВАНИЕ_МИГРАЦИИ sql
 2. Миграции отработает автоматически при страте/перезапуске приложения

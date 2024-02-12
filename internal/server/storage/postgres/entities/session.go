@@ -11,10 +11,9 @@ import (
 
 var _ sql.Scanner = &FingerPrint{}
 
-// MyScanner - пользовательский тип для реализации интерфейса sql.Scanner
 type FingerPrint map[string]any
 
-// Scan - метод, реализующий интерфейс sql.Scanner
+// Scan - метод, реализующий интерфейс sql.Scanner sql.Out
 func (m *FingerPrint) Scan(value interface{}) error {
 	// Проверяем, что значение является срезом байтов ([]uint8)
 	if value == nil {
