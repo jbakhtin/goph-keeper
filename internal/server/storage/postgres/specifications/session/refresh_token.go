@@ -2,6 +2,7 @@ package session
 
 import (
 	"fmt"
+	"github.com/feiin/sqlstring"
 
 	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 )
@@ -13,7 +14,7 @@ type RefreshTokenSpecification struct {
 }
 
 func (s *RefreshTokenSpecification) Query() string {
-	return fmt.Sprintf("refresh_token = '%s'", s.RefreshToken)
+	return fmt.Sprintf("refresh_token = %v", sqlstring.Escape(s.RefreshToken))
 }
 
 func (s *RefreshTokenSpecification) Value() []any {

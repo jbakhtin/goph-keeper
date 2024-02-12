@@ -2,6 +2,7 @@ package basic
 
 import (
 	"fmt"
+	"github.com/feiin/sqlstring"
 
 	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 )
@@ -14,7 +15,7 @@ type LimitSpecification struct {
 }
 
 func (s *LimitSpecification) Query() string {
-	return fmt.Sprintf("%s LIMIT %v", s.Specification.Query(), s.Limit)
+	return fmt.Sprintf("%s LIMIT %v", s.Specification.Query(), sqlstring.Escape(s.Limit))
 }
 
 func (s *LimitSpecification) Value() []any {

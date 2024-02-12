@@ -2,6 +2,7 @@ package session
 
 import (
 	"fmt"
+	"github.com/feiin/sqlstring"
 
 	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
 )
@@ -13,7 +14,7 @@ type UserIDSpecification struct {
 }
 
 func (s *UserIDSpecification) Query() string {
-	return fmt.Sprintf("user_id = %v", s.UserID)
+	return fmt.Sprintf("user_id = %v", sqlstring.Escape(s.UserID))
 }
 
 func (s *UserIDSpecification) Value() []any {

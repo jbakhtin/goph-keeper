@@ -6,6 +6,7 @@ require (
 	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.31.0-20231017183020-0de7443d03cf.2
 	github.com/bufbuild/protovalidate-go v0.3.3
 	github.com/caarlos0/env/v6 v6.10.1
+	github.com/feiin/sqlstring v0.3.0
 	github.com/go-faster/errors v0.6.1
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/google/uuid v1.3.1
