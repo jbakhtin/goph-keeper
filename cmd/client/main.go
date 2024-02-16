@@ -231,6 +231,9 @@ func NewKeyValue(cmd *flag.FlagSet) error {
 	data, err := json.Marshal(map[string]any{
 		"katy@mail.ru": "123456",
 	})
+	if err != nil {
+		return err
+	}
 
 	pbRegisterRequest := &secrets.CrateRequest{
 		Type:        "keyvalue",
