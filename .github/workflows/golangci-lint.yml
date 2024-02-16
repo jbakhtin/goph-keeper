@@ -36,8 +36,8 @@ jobs:
 
           # Optional: golangci-lint command line arguments.
           #
-          # Note: By default, the `.golangci.yml` file should be at the root of the repositories.
-          # The location of the configuration file can be changed by using `--config=`
+          # Note: By default, the `.golangci.yml` secrets should be at the root of the repositories.
+          # The location of the configuration secrets can be changed by using `--config=`
           # args: --timeout=30m --config=/my/path/.golangci.yml --issues-exit-code=0
 
           # Optional: show only new issues if it's a pull request. The default value is `false`.

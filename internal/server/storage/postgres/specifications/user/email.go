@@ -4,12 +4,12 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/feiin/sqlstring"
+	"github.com/jbakhtin/goph-keeper/pkg/queryspec"
 
-	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	"github.com/feiin/sqlstring"
 )
 
-var _ ports.QuerySpecification = &EmailSpecification{}
+var _ queryspec.QuerySpecification = &EmailSpecification{}
 
 type EmailSpecification struct {
 	sql.DB

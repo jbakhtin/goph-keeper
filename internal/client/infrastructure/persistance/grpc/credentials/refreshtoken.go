@@ -17,13 +17,13 @@ type TokensPair struct {
 func Read() (*TokensPair, error) {
 	content, err := os.ReadFile("./config.json")
 	if err != nil {
-		return nil, errors.Wrap(err, "open file")
+		return nil, errors.Wrap(err, "open secrets")
 	}
 
 	var tokens TokensPair
 	err = json.Unmarshal(content, &tokens)
 	if err != nil {
-		return nil, errors.Wrap(err, "unmarshal file to structure")
+		return nil, errors.Wrap(err, "unmarshal secrets to structure")
 	}
 
 	return &tokens, nil

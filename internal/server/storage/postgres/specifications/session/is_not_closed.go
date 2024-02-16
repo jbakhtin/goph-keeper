@@ -1,8 +1,10 @@
 package session
 
-import ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+import (
+	"github.com/jbakhtin/goph-keeper/pkg/queryspec"
+)
 
-var _ ports.QuerySpecification = &IsNotClosedSpecification{}
+var _ queryspec.QuerySpecification = &IsNotClosedSpecification{}
 
 type IsNotClosedSpecification struct{}
 

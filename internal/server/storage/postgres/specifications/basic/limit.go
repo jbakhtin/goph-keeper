@@ -3,15 +3,15 @@ package basic
 import (
 	"fmt"
 
-	"github.com/feiin/sqlstring"
+	"github.com/jbakhtin/goph-keeper/pkg/queryspec"
 
-	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	"github.com/feiin/sqlstring"
 )
 
-var _ ports.QuerySpecification = &WhereSpecification{}
+var _ queryspec.QuerySpecification = &WhereSpecification{}
 
 type LimitSpecification struct {
-	Specification ports.QuerySpecification
+	Specification queryspec.QuerySpecification
 	Limit         int
 }
 

@@ -1,22 +1,19 @@
-package session
+package secrets
 
 import (
-	"encoding/json"
-
-	"github.com/jbakhtin/goph-keeper/pkg/queryspec"
-
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/models"
-	secondary_ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	secondaryports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/secrets/ports/secondary"
 	"github.com/jbakhtin/goph-keeper/internal/server/storage/postgres/specifications/basic"
+	"github.com/jbakhtin/goph-keeper/internal/server/storage/postgres/specifications/session"
+	"github.com/jbakhtin/goph-keeper/pkg/queryspec"
 )
 
-var _ secondary_ports.SessionQuerySpecification = &Specification{}
+var _ secondaryports.SecretQuerySpecification = &Specification{}
 
 type Specification struct {
 	specifications []queryspec.QuerySpecification
 }
 
-func NewSessionQuerySpecification() (Specification, error) {
+func NewKeyValueQuerySpecification() (Specification, error) {
 	return Specification{
 		specifications: make([]queryspec.QuerySpecification, 0),
 	}, nil
@@ -47,25 +44,8 @@ func (s Specification) And(specifications ...queryspec.QuerySpecification) query
 	}
 }
 
-func (s Specification) UserID(userID int) queryspec.QuerySpecification {
-	return &UserIDSpecification{
-		UserID: userID,
-	}
-}
-
-func (s Specification) IsNotClosed() queryspec.QuerySpecification {
-	return &IsNotClosedSpecification{}
-}
-
-func (s Specification) FingerPrint(fingerPrint models.FingerPrint) queryspec.QuerySpecification {
-	buf, _ := json.Marshal(fingerPrint)
-	return &FingerPrintSpecification{
-		FingerPrint: string(buf),
-	}
-}
-
-func (s Specification) RefreshToken(refreshToken string) queryspec.QuerySpecification {
-	return &RefreshTokenSpecification{
-		RefreshToken: refreshToken,
+func (s Specification) UserID(id int) queryspec.QuerySpecification {
+	return &session.UserIDSpecification{
+		UserID: id,
 	}
 }

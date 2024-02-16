@@ -15,7 +15,7 @@ import (
 func NewJWTCredentials() (credentials.PerRPCCredentials, error) {
 	file, err := os.Open("./config.json") // ToDo: move to config
 	if err != nil {
-		return nil, errors.Wrap(err, "open file")
+		return nil, errors.Wrap(err, "open secrets")
 	}
 
 	reader := bufio.NewReader(file)
@@ -28,7 +28,7 @@ func NewJWTCredentials() (credentials.PerRPCCredentials, error) {
 	var tokens map[string]string
 	err = json.Unmarshal(data, &tokens)
 	if err != nil {
-		return nil, errors.Wrap(err, "unmarshal file to structure")
+		return nil, errors.Wrap(err, "unmarshal secrets to structure")
 	}
 
 	return jwtCredentials{

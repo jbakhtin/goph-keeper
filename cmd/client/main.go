@@ -10,7 +10,7 @@ import (
 	"os"
 
 	"github.com/jbakhtin/goph-keeper/gen/go/v1/auth"
-	"github.com/jbakhtin/goph-keeper/gen/go/v1/kv"
+	"github.com/jbakhtin/goph-keeper/gen/go/v1/secrets"
 
 	"github.com/go-faster/errors"
 	"github.com/jbakhtin/goph-keeper/internal/client/infrastructure/persistance/grpc/credentials"
@@ -134,7 +134,7 @@ func Login(cmd *flag.FlagSet, login, password *string) error {
 
 	file, err := openFile("./config.json", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
-		return errors.Wrap(err, "open file")
+		return errors.Wrap(err, "open secrets")
 	}
 
 	data, err := json.Marshal(response)
@@ -148,11 +148,11 @@ func Login(cmd *flag.FlagSet, login, password *string) error {
 	}
 
 	if _, err = file.Seek(0, 0); err != nil {
-		return errors.Wrap(err, "seek file")
+		return errors.Wrap(err, "seek secrets")
 	}
 
 	if err = writer.WriteByte('\n'); err != nil {
-		return errors.Wrap(err, "write bytes to file with \\\n")
+		return errors.Wrap(err, "write bytes to secrets with \\\n")
 	}
 
 	return writer.Flush()
@@ -226,12 +226,16 @@ func NewKeyValue(cmd *flag.FlagSet) error {
 		return err
 	}
 
-	client := kv.NewKeyValueServiceClient(conn)
+	client := secrets.NewSecretsServiceClient(conn)
 
-	pbRegisterRequest := &kv.CrateRequest{
-		Key:      "password",
-		Value:    "test",
-		Metadata: "my new test password",
+	data, err := json.Marshal(map[string]any{
+		"katy@mail.ru": "123456",
+	})
+
+	pbRegisterRequest := &secrets.CrateRequest{
+		Type:        "keyvalue",
+		Data:        string(data),
+		Description: "my new test password",
 	}
 
 	_, err = client.Create(context.TODO(), pbRegisterRequest)
@@ -265,7 +269,7 @@ func openFile(path string, flag int, perm os.FileMode) (*os.File, error) {
 func Write(data any) (err error) {
 	file, err := openFile("./config.json", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644) // ToDo: move config.json into [ports/adapters]
 	if err != nil {
-		return errors.Wrap(err, "open file")
+		return errors.Wrap(err, "open secrets")
 	}
 	defer func() {
 		err = file.Close()

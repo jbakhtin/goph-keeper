@@ -3,13 +3,13 @@ package basic
 import (
 	"strings"
 
-	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	"github.com/jbakhtin/goph-keeper/pkg/queryspec"
 )
 
-var _ ports.QuerySpecification = &WhereSpecification{}
+var _ queryspec.QuerySpecification = &AndSpecification{}
 
 type AndSpecification struct {
-	Specifications []ports.QuerySpecification
+	Specifications []queryspec.QuerySpecification
 }
 
 func (s *AndSpecification) Query() string {
