@@ -20,9 +20,18 @@
 # Go workspace file
 go.work
 
-# IDE files
+# IDE file
 .idea
 
-# TSL/SSL files
+# TSL/SSL file
 *.pem
 *.srl
+
+# sandbox
+cmd/sandbox
+
+#bin
+bin/
+
+# logger
+storage/logs

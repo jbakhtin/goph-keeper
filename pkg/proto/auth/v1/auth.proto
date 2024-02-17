@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-package v1.auth;
-
-import "google/protobuf/empty.proto";
-import "buf/validate/validate.proto";
-
-option go_package = "github.com/jbakhtin/goph-keep/pkg/proto/v1/auth";
