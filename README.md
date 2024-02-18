@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/github/jbakhtin/goph-keeper/graph/badge.svg?token=i6zPByp7Tt)](https://codecov.io/github/jbakhtin/goph-keeper)
+
 # goph-keeper
 GophKeeper представляет собой клиент-серверную систему, позволяющую пользователю надёжно и безопасно хранить логины, пароли, бинарные данные и прочую приватную информацию.
 
