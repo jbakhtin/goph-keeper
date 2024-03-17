@@ -2,7 +2,7 @@ package secondary
 
 import (
 	"context"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/files/domain/models"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/files/domain/models"
 )
 
 type ObjectStorageRepository interface {

@@ -2,9 +2,9 @@ package services
 
 import (
 	"context"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/files/domain/models"
-	primary_ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/files/ports/primary"
-	secondary_ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/files/ports/secondary"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/files/domain/models"
+	primary_ports "github.com/jbakhtin/goph-keeper/internal/appmodules/files/ports/primary"
+	secondary_ports "github.com/jbakhtin/goph-keeper/internal/appmodules/files/ports/secondary"
 )
 
 var _ primary_ports.UseCase = &UseCase{}
