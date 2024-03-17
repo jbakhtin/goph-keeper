@@ -44,7 +44,7 @@ func (s *Server) Start(ctx context.Context) (err error) {
 		return err
 	}
 
-	go func() { // ToDo: need to add context handle
+	go func() {
 		if err = s.Serve(listen); err != nil {
 			err = errors.Wrap(err, "serve")
 		}
