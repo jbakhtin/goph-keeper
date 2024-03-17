@@ -1,9 +1,9 @@
 package keyvalue
 
 import (
-	primaryports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/ports/primary"
-	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/ports/secondary"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/services"
+	primaryports "github.com/jbakhtin/goph-keeper/internal/appmodules/key-value/ports/primary"
+	ports "github.com/jbakhtin/goph-keeper/internal/appmodules/key-value/ports/secondary"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/key-value/services"
 )
 
 type Config interface{}

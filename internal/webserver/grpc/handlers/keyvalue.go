@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/jbakhtin/goph-keeper/gen/go/v1/kv"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/domain/models"
-	primary_ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/ports/primary"
-	"github.com/jbakhtin/goph-keeper/internal/server/logger/zap"
-	"github.com/jbakhtin/goph-keeper/internal/server/webserver/grpc/interceptors"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/key-value/domain/models"
+	primary_ports "github.com/jbakhtin/goph-keeper/internal/appmodules/key-value/ports/primary"
+	"github.com/jbakhtin/goph-keeper/internal/logger/zap"
+	"github.com/jbakhtin/goph-keeper/internal/webserver/grpc/interceptors"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/bufbuild/protovalidate-go"

@@ -5,13 +5,13 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/models"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/types"
-	primaryports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/primary"
-	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
-	"github.com/jbakhtin/goph-keeper/internal/server/webserver/grpc/interceptors"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/auth/domain/models"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/auth/domain/types"
+	primaryports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/primary"
+	ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
+	"github.com/jbakhtin/goph-keeper/internal/webserver/grpc/interceptors"
 
-	"github.com/jbakhtin/goph-keeper/internal/server/apperror"
+	"github.com/jbakhtin/goph-keeper/internal/apperror"
 	"github.com/pkg/errors"
 )
 

@@ -3,7 +3,7 @@ package basic
 import (
 	"fmt"
 
-	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
 )
 
 var _ ports.QuerySpecification = &WhereSpecification{}

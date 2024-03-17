@@ -2,7 +2,7 @@ package drivers
 
 import (
 	"github.com/caarlos0/env/v6"
-	"github.com/jbakhtin/goph-keeper/internal/server/config"
+	"github.com/jbakhtin/goph-keeper/internal/config"
 )
 
 func NewConfigFormENV() (*config.Config, error) {

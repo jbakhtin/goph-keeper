@@ -3,9 +3,9 @@ package session
 import (
 	"encoding/json"
 
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/models"
-	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
-	"github.com/jbakhtin/goph-keeper/internal/server/storage/postgres/specifications/basic"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/auth/domain/models"
+	ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
+	"github.com/jbakhtin/goph-keeper/internal/storage/postgres/specifications/basic"
 )
 
 var _ ports.SessionQuerySpecification = &Specification{}

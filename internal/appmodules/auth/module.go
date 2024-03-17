@@ -1,11 +1,11 @@
 package auth
 
 import (
-	primaryports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/primary"
-	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/services/accesstoken"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/services/password"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/services/usecase"
+	primaryports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/primary"
+	ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/auth/services/accesstoken"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/auth/services/password"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/auth/services/usecase"
 )
 
 type Module struct {

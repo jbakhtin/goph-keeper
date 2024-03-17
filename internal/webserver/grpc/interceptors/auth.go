@@ -4,10 +4,10 @@ import (
 	"context"
 	"strings"
 
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/types"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/auth/domain/types"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/jbakhtin/goph-keeper/internal/server/apperror"
+	"github.com/jbakhtin/goph-keeper/internal/apperror"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"

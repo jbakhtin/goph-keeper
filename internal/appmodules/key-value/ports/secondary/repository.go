@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/domain/models"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/key-value/domain/models"
 )
 
 type KeyValueRepository interface {

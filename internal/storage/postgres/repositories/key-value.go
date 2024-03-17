@@ -5,11 +5,11 @@ import (
 	"database/sql"
 
 	"github.com/google/uuid"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/domain/models"
-	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/ports/secondary"
-	"github.com/jbakhtin/goph-keeper/internal/server/logger/zap"
-	"github.com/jbakhtin/goph-keeper/internal/server/storage/postgres/entities"
-	"github.com/jbakhtin/goph-keeper/internal/server/storage/postgres/query"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/key-value/domain/models"
+	ports "github.com/jbakhtin/goph-keeper/internal/appmodules/key-value/ports/secondary"
+	"github.com/jbakhtin/goph-keeper/internal/logger/zap"
+	"github.com/jbakhtin/goph-keeper/internal/storage/postgres/entities"
+	"github.com/jbakhtin/goph-keeper/internal/storage/postgres/query"
 )
 
 var _ ports.KeyValueRepository = &KeyValueRepository{}

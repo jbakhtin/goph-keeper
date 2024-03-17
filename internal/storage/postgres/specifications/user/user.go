@@ -1,8 +1,8 @@
 package user
 
 import (
-	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
-	"github.com/jbakhtin/goph-keeper/internal/server/storage/postgres/specifications/basic"
+	ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
+	"github.com/jbakhtin/goph-keeper/internal/storage/postgres/specifications/basic"
 )
 
 type Specification struct {

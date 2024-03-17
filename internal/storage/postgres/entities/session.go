@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/models"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/auth/domain/models"
 )
 
 var _ sql.Scanner = &FingerPrint{}

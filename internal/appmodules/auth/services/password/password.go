@@ -5,7 +5,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 
-	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
 )
 
 type Config interface {

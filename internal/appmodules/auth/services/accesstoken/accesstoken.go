@@ -3,8 +3,8 @@ package accesstoken
 import (
 	"time"
 
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/types"
-	secondaryports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/auth/domain/types"
+	secondaryports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
 
 	"github.com/go-faster/errors"
 	"github.com/golang-jwt/jwt/v5"

@@ -3,8 +3,8 @@ package ports
 import (
 	"context"
 
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/models"
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/types"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/auth/domain/models"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/auth/domain/types"
 )
 
 type LogOutType int

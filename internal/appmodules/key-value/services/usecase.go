@@ -3,8 +3,8 @@ package services
 import (
 	"context"
 
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/domain/models"
-	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/key-value/ports/secondary"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/key-value/domain/models"
+	ports "github.com/jbakhtin/goph-keeper/internal/appmodules/key-value/ports/secondary"
 )
 
 type KeyValueUseCase struct {

@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/domain/models"
-	ports "github.com/jbakhtin/goph-keeper/internal/server/appmodules/auth/ports/secondary"
-	"github.com/jbakhtin/goph-keeper/internal/server/logger/zap"
-	"github.com/jbakhtin/goph-keeper/internal/server/storage/postgres/entities"
-	"github.com/jbakhtin/goph-keeper/internal/server/storage/postgres/query"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/auth/domain/models"
+	ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
+	"github.com/jbakhtin/goph-keeper/internal/logger/zap"
+	"github.com/jbakhtin/goph-keeper/internal/storage/postgres/entities"
+	"github.com/jbakhtin/goph-keeper/internal/storage/postgres/query"
 )
 
 var _ ports.SessionRepository = &SessionRepository{}

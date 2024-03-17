@@ -4,7 +4,7 @@ import (
 	"flag"
 	"time"
 
-	"github.com/jbakhtin/goph-keeper/internal/server/config"
+	"github.com/jbakhtin/goph-keeper/internal/config"
 )
 
 const (
