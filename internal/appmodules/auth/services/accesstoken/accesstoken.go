@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/jbakhtin/goph-keeper/internal/appmodules/auth/domain/types"
-	secondaryports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
+	secondary_ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
 
 	"github.com/go-faster/errors"
 	"github.com/golang-jwt/jwt/v5"
@@ -16,10 +16,10 @@ type Config interface {
 
 type Service struct {
 	cfg Config
-	lgr secondaryports.Logger
+	lgr secondary_ports.Logger
 }
 
-func New(cfg Config, lgr secondaryports.Logger) (*Service, error) {
+func New(cfg Config, lgr secondary_ports.Logger) (*Service, error) {
 	return &Service{
 		cfg: cfg,
 		lgr: lgr,

@@ -5,13 +5,15 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/jbakhtin/goph-keeper/pkg/queryspec"
+
 	"github.com/jbakhtin/goph-keeper/internal/appmodules/auth/domain/models"
-	ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
+	secondary_ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
 	"github.com/jbakhtin/goph-keeper/internal/logger/zap"
 	"github.com/jbakhtin/goph-keeper/internal/storage/postgres/query"
 )
 
-var _ ports.UserRepository = &UserRepository{}
+var _ secondary_ports.UserRepository = &UserRepository{}
 
 type UserRepository struct {
 	*sql.DB
@@ -64,7 +66,7 @@ func (u *UserRepository) Delete(ctx context.Context, user models.User) (*models.
 	panic("implement me")
 }
 
-func (u *UserRepository) Search(ctx context.Context, specification ports.QuerySpecification) ([]*models.User, error) {
+func (u *UserRepository) Search(ctx context.Context, specification queryspec.QuerySpecification) ([]*models.User, error) {
 	rows, err := u.QueryContext(ctx, fmt.Sprintf("%s %s", query.SearchUserTemp, specification.Query()))
 	if err != nil {
 		return nil, err

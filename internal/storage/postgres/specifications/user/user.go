@@ -1,46 +1,46 @@
 package user
 
 import (
-	ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
 	"github.com/jbakhtin/goph-keeper/internal/storage/postgres/specifications/basic"
+	"github.com/jbakhtin/goph-keeper/pkg/queryspec"
 )
 
 type Specification struct {
-	specifications []ports.QuerySpecification
+	specifications []queryspec.QuerySpecification
 }
 
 func NewUserQuerySpecification() (Specification, error) {
 	return Specification{
-		specifications: make([]ports.QuerySpecification, 0),
+		specifications: make([]queryspec.QuerySpecification, 0),
 	}, nil
 }
 
-func (s Specification) Limit(specification ports.QuerySpecification, i int) ports.QuerySpecification {
+func (s Specification) Limit(specification queryspec.QuerySpecification, i int) queryspec.QuerySpecification {
 	return &basic.LimitSpecification{
 		Specification: specification,
 		Limit:         i,
 	}
 }
 
-func (s Specification) Where(specification ports.QuerySpecification) ports.QuerySpecification {
+func (s Specification) Where(specification queryspec.QuerySpecification) queryspec.QuerySpecification {
 	return &basic.WhereSpecification{
 		Specification: specification,
 	}
 }
 
-func (s Specification) Or(specifications ...ports.QuerySpecification) ports.QuerySpecification {
+func (s Specification) Or(specifications ...queryspec.QuerySpecification) queryspec.QuerySpecification {
 	return &basic.OrSpecification{
 		Specifications: specifications,
 	}
 }
 
-func (s Specification) And(specifications ...ports.QuerySpecification) ports.QuerySpecification {
+func (s Specification) And(specifications ...queryspec.QuerySpecification) queryspec.QuerySpecification {
 	return &basic.AndSpecification{
 		Specifications: specifications,
 	}
 }
 
-func (s Specification) Email(email string) ports.QuerySpecification {
+func (s Specification) Email(email string) queryspec.QuerySpecification {
 	return &EmailSpecification{
 		Email: email,
 	}

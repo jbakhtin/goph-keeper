@@ -5,7 +5,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 
-	ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
+	secondary_ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
 )
 
 type Config interface {
@@ -14,10 +14,10 @@ type Config interface {
 
 type Service struct {
 	cfg Config
-	lgr ports.Logger
+	lgr secondary_ports.Logger
 }
 
-func New(cfg Config, lgr ports.Logger) (*Service, error) {
+func New(cfg Config, lgr secondary_ports.Logger) (*Service, error) {
 	return &Service{
 		cfg: cfg,
 		lgr: lgr,

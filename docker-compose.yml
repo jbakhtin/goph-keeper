@@ -18,6 +18,7 @@ services:
       - 8080:8080
 
   server:
+    restart: always
     build:
       dockerfile: Dockerfile
       context: .

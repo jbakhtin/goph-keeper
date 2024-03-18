@@ -7,10 +7,12 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/secrets"
+	keyvalue2 "github.com/jbakhtin/goph-keeper/internal/storage/postgres/specifications/keyvalue"
+
 	auth2 "github.com/jbakhtin/goph-keeper/gen/go/v1/auth"
-	"github.com/jbakhtin/goph-keeper/gen/go/v1/kv"
+	secrets2 "github.com/jbakhtin/goph-keeper/gen/go/v1/secrets"
 	"github.com/jbakhtin/goph-keeper/internal/appmodules/auth"
-	keyvalue "github.com/jbakhtin/goph-keeper/internal/appmodules/key-value"
 	"github.com/jbakhtin/goph-keeper/internal/config"
 	"github.com/jbakhtin/goph-keeper/internal/config/drivers"
 	"github.com/jbakhtin/goph-keeper/internal/logger/zap"
@@ -36,7 +38,7 @@ var (
 // NOTE список нужно обновлять при добавлении новых обработчиков, если требуется
 func accessibleRoles() map[string][]string {
 	const authService = "/v1.auth.AuthService/"
-	const keyValueService = "/v1.kv.KeyValueService/"
+	const keyValueService = "/v1.secrets.SecretsService/"
 
 	return map[string][]string{
 		authService + "RefreshToken": {},
@@ -93,6 +95,11 @@ func init() {
 		lgr.Fatal(err.Error())
 	}
 
+	keyValueQuerySpecification, err := keyvalue2.NewKeyValueQuerySpecification() // ToDo: need refactoring
+	if err != nil {
+		lgr.Fatal(err.Error())
+	}
+
 	// Init app modules
 	// NOTE The app modules are built on a hexagonal architecture
 
@@ -101,7 +108,7 @@ func init() {
 		lgr.Fatal(err.Error())
 	}
 
-	keyValueModule, err := keyvalue.NewModule(cfg, lgr, keyValueRepository)
+	keyValueModule, err := secrets.NewModule(cfg, lgr, keyValueRepository, keyValueQuerySpecification)
 	if err != nil {
 		lgr.Fatal(err.Error())
 	}
@@ -130,7 +137,7 @@ func init() {
 	}
 
 	auth2.RegisterAuthServiceServer(server, authHandler) // ToDo: need to move to another place
-	kv.RegisterKeyValueServiceServer(server, keyValueHandler)
+	secrets2.RegisterSecretsServiceServer(server, keyValueHandler)
 
 	// Init closer
 	if clr, err = closer.New().WithFuncs(server.Shutdown).Build(); err != nil {

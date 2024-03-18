@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"strings"
 
-	ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
+	"github.com/jbakhtin/goph-keeper/pkg/queryspec"
 )
 
-var _ ports.QuerySpecification = &WhereSpecification{}
+var _ queryspec.QuerySpecification = &OrSpecification{}
 
 type OrSpecification struct {
-	Specifications []ports.QuerySpecification
+	Specifications []queryspec.QuerySpecification
 }
 
 func (s *OrSpecification) Query() string {
