@@ -4,7 +4,7 @@ import "bytes"
 
 type File struct {
 	ID     int
-	UserId int
+	UserID int
 	Type   string
 	Path   int
 	Buffer bytes.Buffer

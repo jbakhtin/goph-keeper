@@ -19,6 +19,7 @@ type UseCase struct {
 }
 
 func (u *UseCase) Save(ctx context.Context, file *models.File) (*models.File, error) {
+	u.lgr.Debug("files.use_case.save", u.cfg)
 	err := u.objectStorageRepository.Save(ctx, file)
 	if err != nil {
 		return nil, err
