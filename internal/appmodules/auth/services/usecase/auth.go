@@ -7,8 +7,8 @@ import (
 
 	"github.com/jbakhtin/goph-keeper/internal/appmodules/auth/domain/models"
 	"github.com/jbakhtin/goph-keeper/internal/appmodules/auth/domain/types"
-	primaryports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/primary"
-	ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
+	primary_ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/primary"
+	secondary_ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
 	"github.com/jbakhtin/goph-keeper/internal/webserver/grpc/interceptors"
 
 	"github.com/jbakhtin/goph-keeper/internal/apperror"
@@ -31,24 +31,24 @@ type AccessTokenService interface {
 
 type Service struct {
 	cfg                       Config
-	lgr                       ports.Logger
+	lgr                       secondary_ports.Logger
 	passwordAppService        PasswordService
 	accessTokenAppService     AccessTokenService
-	sessionRepository         ports.SessionRepository
-	sessionQuerySpecification ports.SessionQuerySpecification
-	userQuerySpecification    ports.UserQuerySpecification
-	userRepository            ports.UserRepository
+	sessionRepository         secondary_ports.SessionRepository
+	sessionQuerySpecification secondary_ports.SessionQuerySpecification
+	userQuerySpecification    secondary_ports.UserQuerySpecification
+	userRepository            secondary_ports.UserRepository
 }
 
 func New(
 	cfg Config,
-	lgr ports.Logger,
+	lgr secondary_ports.Logger,
 	passwordAppService PasswordService,
 	accessTokenAppService AccessTokenService,
-	sessionRepository ports.SessionRepository,
-	sessionQuerySpecification ports.SessionQuerySpecification,
-	userQuerySpecification ports.UserQuerySpecification,
-	userRepository ports.UserRepository) (*Service, error) {
+	sessionRepository secondary_ports.SessionRepository,
+	sessionQuerySpecification secondary_ports.SessionQuerySpecification,
+	userQuerySpecification secondary_ports.UserQuerySpecification,
+	userRepository secondary_ports.UserRepository) (*Service, error) {
 	return &Service{
 		cfg:                       cfg,
 		lgr:                       lgr,
@@ -104,6 +104,10 @@ func (us *Service) LoginUser(ctx context.Context, email string, password string,
 		return nil, errors.Wrap(err, "get user by email")
 	}
 
+	if len(users) == 0 {
+		return nil, apperror.ErrUserNotFound
+	}
+
 	user := users[0]
 
 	if ok, err := us.passwordAppService.CheckPassword(password, user.Password); !ok {
@@ -118,7 +122,7 @@ func (us *Service) LoginUser(ctx context.Context, email string, password string,
 		ExpireAt:    time.Now().Add(us.cfg.GetSessionExpire()),
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "create session") //ToDo: mistake
+		return nil, errors.Wrap(err, "create session") // ToDo: mistake
 	}
 
 	accessToken, err := us.accessTokenAppService.Create(*user.ID, *session.ID, us.cfg.GetAccessTokenExpire())
@@ -142,6 +146,10 @@ func (us *Service) RefreshToken(ctx context.Context, refreshToken string) (*type
 		return nil, errors.Wrap(err, "get session by refresh_token")
 	}
 
+	if len(sessions) == 0 {
+		return nil, errors.Wrap(err, "sessions not found")
+	}
+
 	session := sessions[0]
 
 	session.UpdateRefreshToken()
@@ -161,13 +169,13 @@ func (us *Service) RefreshToken(ctx context.Context, refreshToken string) (*type
 	}, nil
 }
 
-func (us *Service) Logout(ctx context.Context, logOutType primaryports.LogOutType) (sessions []*models.Session, err error) {
+func (us *Service) Logout(ctx context.Context, logOutType primary_ports.LogOutType) (sessions []*models.Session, err error) {
 	var sessionID = ctx.Value(interceptors.ContextKeySessionID)
 	var userID = ctx.Value(interceptors.ContextKeyUserID)
 
 	// ToDo: добавить проверку на истечение срока жизни сессии и то что сессия уже закрыта
 	switch logOutType {
-	case primaryports.LogoutTypeThis:
+	case primary_ports.LogoutTypeThis:
 		session, err := us.sessionRepository.Get(ctx, sessionID.(int))
 		if err != nil {
 			return nil, errors.Wrap(err, "get session by session id")
@@ -179,7 +187,7 @@ func (us *Service) Logout(ctx context.Context, logOutType primaryports.LogOutTyp
 			return nil, errors.Wrap(err, "close current session by session_id")
 		}
 		sessions = append(sessions, session)
-	case primaryports.LogoutTypeAll:
+	case primary_ports.LogoutTypeAll:
 		sessions, err = us.sessionRepository.Search(ctx, us.sessionQuerySpecification.Where(
 			us.sessionQuerySpecification.And(
 				us.sessionQuerySpecification.UserID(userID.(int)),

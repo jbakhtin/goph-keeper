@@ -4,69 +4,68 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/jbakhtin/goph-keeper/pkg/queryspec"
+
 	"github.com/google/uuid"
-	"github.com/jbakhtin/goph-keeper/internal/appmodules/key-value/domain/models"
-	ports "github.com/jbakhtin/goph-keeper/internal/appmodules/key-value/ports/secondary"
+	"github.com/jbakhtin/goph-keeper/internal/appmodules/secrets/domain/models"
+	secondaryports "github.com/jbakhtin/goph-keeper/internal/appmodules/secrets/ports/secondary"
 	"github.com/jbakhtin/goph-keeper/internal/logger/zap"
 	"github.com/jbakhtin/goph-keeper/internal/storage/postgres/entities"
 	"github.com/jbakhtin/goph-keeper/internal/storage/postgres/query"
 )
 
-var _ ports.KeyValueRepository = &KeyValueRepository{}
+var _ secondaryports.SecretRepository = &SecretRepository{}
 
-type KeyValueRepository struct {
+type SecretRepository struct {
 	*sql.DB
 	lgr *zap.Logger
 }
 
-func NewKeyValueRepository(lgr *zap.Logger, client *sql.DB) (*KeyValueRepository, error) {
-	return &KeyValueRepository{
+func NewKeyValueRepository(lgr *zap.Logger, client *sql.DB) (*SecretRepository, error) {
+	return &SecretRepository{
 		DB:  client,
 		lgr: lgr,
 	}, nil
 }
 
 // ModelToEntity фабрика сущности базы данных
-func ModelToEntity(model models.KeyValue) (entities.Secret, error) {
+func ModelToEntity(model models.Secret) (entities.Secret, error) {
 	return entities.Secret{
 		ID:     model.ID,
 		UserID: model.UserID,
-		Type:   "kv",
-		Data: map[any]any{
+		Data: map[string]any{
 			"key": "test",
 		},
-		MetaData:  model.Metadata,
-		CreatedAt: model.CreatedAt,
-		UpdatedAt: model.UpdatedAt,
+		Description: model.Description,
+		CreatedAt:   model.CreatedAt,
+		UpdatedAt:   model.UpdatedAt,
 	}, nil
 }
 
 // EntityToModel фабрика модели ядра приложения (модуля)
 // NOTE фабрика модели ядра должна располагаться снаружи, что бы ядро не зависела от внешних компонентов
 // можно использовать внутренние фабрики (Но они не должны зависеть от внешних пакетов) и спецификации предписывающие правила создания модели
-func EntityToModel(entity entities.Secret) (models.KeyValue, error) {
-	return models.KeyValue{
-		ID:        entity.ID,
-		UserID:    entity.UserID,
-		Key:       "key",
-		Value:     "test",
-		Metadata:  entity.MetaData,
-		CreatedAt: entity.CreatedAt,
-		UpdatedAt: entity.UpdatedAt,
+func EntityToModel(entity entities.Secret) (models.Secret, error) {
+	return models.Secret{
+		ID:          entity.ID,
+		UserID:      entity.UserID,
+		Data:        models.Data(entity.Data),
+		Description: entity.Description,
+		CreatedAt:   entity.CreatedAt,
+		UpdatedAt:   entity.UpdatedAt,
 	}, nil
 }
 
-func (r *KeyValueRepository) SaveKeyValue(ctx context.Context, model models.KeyValue) (*models.KeyValue, error) {
+func (r *SecretRepository) Create(ctx context.Context, model models.Secret) (*models.Secret, error) {
 	row, err := ModelToEntity(model)
 	if err != nil {
 		return nil, err
 	}
 
-	err = r.QueryRowContext(ctx, query.CreateSecret, row.ID, row.UserID, row.Type, row.MetaData, row.Data, row.CreatedAt, row.UpdatedAt).
+	err = r.QueryRowContext(ctx, query.CreateSecret, row.UserID, row.Description, row.Data).
 		Scan(&row.ID,
 			&row.UserID,
-			&row.Type,
-			&row.MetaData,
+			&row.Description,
 			&row.Data,
 			&row.CreatedAt,
 			&row.UpdatedAt) // ToDo: need figure it out how to scan row directly to structure
@@ -82,18 +81,18 @@ func (r *KeyValueRepository) SaveKeyValue(ctx context.Context, model models.KeyV
 	return &model, nil
 }
 
-func (r *KeyValueRepository) GetKeyValue(ctx context.Context, UUID uuid.UUID) (*models.KeyValue, error) {
+func (r *SecretRepository) Get(ctx context.Context, UUID uuid.UUID) (*models.Secret, error) {
 	return nil, nil
 }
 
-func (r *KeyValueRepository) UpdateKeyValue(ctx context.Context, secret models.KeyValue) (*models.KeyValue, error) {
+func (r *SecretRepository) Update(ctx context.Context, secret models.Secret) (*models.Secret, error) {
 	return nil, nil
 }
 
-func (r *KeyValueRepository) DeleteKeyValue(ctx context.Context, secret models.KeyValue) (*models.KeyValue, error) {
+func (r *SecretRepository) Delete(ctx context.Context, secret models.Secret) (*models.Secret, error) {
 	return nil, nil
 }
 
-func (r *KeyValueRepository) SearchKeyValue(ctx context.Context) ([]models.KeyValue, error) {
-	return []models.KeyValue{}, nil
+func (r *SecretRepository) Search(ctx context.Context, query queryspec.QuerySpecification) ([]*models.Secret, error) {
+	return []*models.Secret{}, nil
 }

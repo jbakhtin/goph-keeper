@@ -17,13 +17,13 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-# Go workspace file
+# Go workspace secrets
 go.work
 
-# IDE file
+# IDE secrets
 .idea
 
-# TSL/SSL file
+# TSL/SSL secrets
 *.pem
 *.srl
 

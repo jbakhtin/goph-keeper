@@ -27,7 +27,7 @@ const (
 	AuthService_Logout_FullMethodName             = "/v1.auth.AuthService/Logout"
 )
 
-// AuthServiceClient is the client API for AuthService service.
+// AuthServiceClient is the client API for AuthService services.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
@@ -81,7 +81,7 @@ func (c *authServiceClient) Logout(ctx context.Context, in *LogoutRequest, opts 
 	return out, nil
 }
 
-// AuthServiceServer is the server API for AuthService service.
+// AuthServiceServer is the server API for AuthService services.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
 type AuthServiceServer interface {
@@ -110,7 +110,7 @@ func (UnimplementedAuthServiceServer) Logout(context.Context, *LogoutRequest) (*
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
-// UnsafeAuthServiceServer may be embedded to opt out of forward compatibility for this service.
+// UnsafeAuthServiceServer may be embedded to opt out of forward compatibility for this services.
 // Use of this interface is not recommended, as added methods to AuthServiceServer will
 // result in compilation errors.
 type UnsafeAuthServiceServer interface {
@@ -193,7 +193,7 @@ func _AuthService_Logout_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-// AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
+// AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService services.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AuthService_ServiceDesc = grpc.ServiceDesc{

@@ -3,12 +3,12 @@ package session
 import (
 	"fmt"
 
-	"github.com/feiin/sqlstring"
+	"github.com/jbakhtin/goph-keeper/pkg/queryspec"
 
-	ports "github.com/jbakhtin/goph-keeper/internal/appmodules/auth/ports/secondary"
+	"github.com/feiin/sqlstring"
 )
 
-var _ ports.QuerySpecification = &FingerPrintSpecification{}
+var _ queryspec.QuerySpecification = &FingerPrintSpecification{}
 
 type FingerPrintSpecification struct {
 	FingerPrint string

@@ -34,7 +34,7 @@ type Config struct {
 		File struct {
 			// Directory is the
 			Directory string `env:"LOG_DIRECTORY" envDefault:"storage/logs/"`
-			// MaxSize is the maximum size in megabytes of the log file before it gets rotated.
+			// MaxSize is the maximum size in megabytes of the log secrets before it gets rotated.
 			MaxSize    int  `env:"LOGGER_FILE_MAX_SIZE" envDefault:"1"`
 			MaxBackups int  `env:"LOGGER_FILE_MAX_BACKUPS" envDefault:"1"`
 			MaxAge     int  `env:"LOGGER_FILE_MAX_AGE" envDefault:"1"`
